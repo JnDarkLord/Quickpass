@@ -1,0 +1,605 @@
+{
+  "lcd": {
+    "idle": {
+      "line1": "QUICKPASS",
+      "line2": "Acerque Carnet"
+    },
+    "check_in": {
+      "welcome": "Bienvenido {name}",
+      "on_time": "Entrada Puntual",
+      "late": "Entrada Tarde"
+    },
+    "check_out": {
+      "goodbye": "Hasta luego {name}",
+      "goodbye_anonymous": "Hasta luego!",
+      "done": "Salida Exitosa"
+    },
+    "repeat_scan": {
+      "granted": "Acceso permitido"
+    },
+    "visitor": {
+      "check_in": "Visita: {name}",
+      "check_out": "Salida: {name}",
+      "badge": "ID: {id}"
+    },
+    "deny": {
+      "header": "Acceso Denegado",
+      "unregistered": "No Registrado",
+      "graduate": "Graduado",
+      "inactive": "Inactivo"
+    },
+    "unlock": {
+      "line1": "Acceso Remoto",
+      "line2": "Puerta Abierta"
+    },
+    "standby_scan": {
+      "line1": "Quickpass Listo",
+      "line2": "Pase por puerta"
+    },
+    "capture": {
+      "badge_read": {
+        "line1": "Tarjeta Leida",
+        "line2": "{uid}"
+      }
+    },
+    "admin_auth": {
+      "line1": "Autorizacion",
+      "line2": "Pase Admin RFID"
+    },
+    "visit_registration": {
+      "line1": "Registro Visita",
+      "line2": "Pase Tarjeta"
+    },
+    "badge_registration": {
+      "line1": "Acerque Tarjeta",
+      "line2": "al Lector RFID"
+    },
+    "badge_added": {
+      "line1": "Tarjeta Añadida",
+      "line2": "con Éxito"
+    },
+    "badge_reassign": {
+      "line1": "Pase Tarjeta",
+      "line2": "para Reasignar"
+    },
+    "badge_updated": {
+      "line1": "Tarjeta Editada",
+      "line2": "con Éxito"
+    },
+    "grade_promotion": {
+      "line1": "Promoción",
+      "line2": "Completada"
+    },
+    "badge_deleted": {
+      "line1": "Tarjeta Borrada",
+      "line2": "con Éxito"
+    },
+    "badge_search": {
+      "line1": "Buscar Persona",
+      "line2": "Pase Tarjeta"
+    }
+  },
+  "sms": {
+    "arrival": "{name} ingresó al colegio hoy {date} a las {time} ({status}).",
+    "leaving": "{name} salió del colegio hoy {date} a las {time}.",
+    "admin_alert": "Una persona no identificada ha tratado de entrar al colegio, el día de {date} a las {time}."
+  },
+  "status": {
+    "on_time": "Puntual",
+    "late": "Tarde",
+    "absent": "Ausente",
+    "visit": "Visita"
+  },
+  "role": {
+    "student": "Estudiante",
+    "teacher": "Profesor",
+    "admin": "Administrador",
+    "visitor": "Visitante",
+    "graduate": "Graduado"
+  },
+  "settings": {
+    "error": {
+      "language": "Elija el idioma del colegio: español o inglés.",
+      "grades_empty": "Agregue al menos un grado.",
+      "grade_blank": "Cada grado necesita un nombre.",
+      "grade_duplicate": "Hay dos grados con el mismo nombre.",
+      "sections_empty": "Agregue al menos una sección.",
+      "section_blank": "Cada sección necesita un nombre.",
+      "section_duplicate": "Hay dos secciones con el mismo nombre.",
+      "section_reserved": "\"ALL\" no puede ser el nombre de una sección.",
+      "section_too_long": "El nombre de una sección tiene como máximo 10 caracteres.",
+      "weekdays": "Elija al menos un día de clases.",
+      "cooldown": "La espera para la salida no puede ser negativa.",
+      "secret_key": "Escriba una clave secreta de administrador.",
+      "grade_in_use": "El grado \"{grade}\" aún tiene {count} estudiantes o profesores activos. Muévalos a otro grado antes de quitarlo.",
+      "section_in_use": "La sección \"{section}\" aún tiene {count} estudiantes activos. Muévalos a otra sección antes de quitarla.",
+      "secret_key_short": "La clave secreta debe tener al menos {min} caracteres.",
+      "secret_key_mismatch": "Las dos claves no coinciden."
+    }
+  },
+  "report": {
+    "file": {
+      "e1": "Busqueda de {name}",
+      "e2": "Búsqueda de fecha total, día {date}",
+      "e3": "Búsqueda de fecha por grado, día {date}, {grade}",
+      "e4": "Busqueda de todos los grados desde {start} hasta {end}",
+      "e5": "Busqueda de {grade} desde {start} hasta {end}",
+      "e6": "Busqueda de {grade} desde {start} hasta {end}",
+      "e7": "Busqueda de {role} - {date}",
+      "e8": "Busqueda de {role} desde {start} hasta {end}"
+    },
+    "sheet": {
+      "list": "Sheet1",
+      "matrix": "Reporte"
+    },
+    "header": {
+      "check_in_date": "Día de entrada",
+      "check_in_time": "Hora de entrada",
+      "check_out_time": "Hora de salida",
+      "time": "Hora",
+      "date": "Fecha",
+      "role": "Rol",
+      "grade_section": "Grado y Sección",
+      "grade_taught": "Grado que enseña",
+      "status": "Estado",
+      "names": "Nombres",
+      "name": "Nombre",
+      "full_name": "Nombres completos",
+      "times_present": "Cuantas veces presentes",
+      "times_late": "Cuantas veces llego tarde",
+      "times_absent": "Cuantas veces no llego"
+    },
+    "mark": {
+      "present": "P",
+      "late": "T",
+      "absent": "A"
+    },
+    "role_plural": {
+      "teacher": "profesores",
+      "admin": "admins",
+      "visitor": "visitantes"
+    },
+    "error": {
+      "folder": "Error al crear carpeta de reportes: {error}",
+      "file": "Error al crear archivo Excel: {error}",
+      "no_data": "No hay datos para exportar.",
+      "no_students": "No se encontraron estudiantes en {grade}."
+    }
+  },
+  "admin": {
+    "error": {
+      "invalid_uid": "UID inválido.",
+      "badge_exists": "Esta tarjeta ya existe.",
+      "invalid_role": "Rol inválido. Operación cancelada.",
+      "name_empty": "El nombre no puede estar vacío.",
+      "grade_range": "Elija un grado de la lista del colegio.",
+      "section_empty": "La sección no puede estar vacía.",
+      "guardian_incomplete": "Cada acudiente debe tener nombre y teléfono juntos.",
+      "too_many_guardians": "Se permiten máximo dos acudientes.",
+      "taught_grade_range": "Elija el grado que enseña de la lista del colegio.",
+      "not_admin": "La tarjeta presentada NO es ADMIN. Cancelado.",
+      "badge_not_found": "Tarjeta no encontrada.",
+      "same_badge": "No puedes autorizar con la misma tarjeta. Cancelado.",
+      "cancelled": "Operación cancelada.",
+      "wipe_password_missing": "WIPE_PASSWORD no está configurada. Operación cancelada.",
+      "wrong_password": "Contraseña incorrecta. Operación cancelada.",
+      "bad_confirmation": "Confirmación no válida. Operación cancelada.",
+      "backup_failed": "Error al crear copia de seguridad: {error}",
+      "section_unknown": "Elija una sección de la lista del colegio: {sections}.",
+      "name_letters": "El nombre debe tener al menos una letra.",
+      "guardian_name_letters": "El nombre de cada acudiente debe tener al menos una letra.",
+      "phone_format": "Escriba el teléfono de cada acudiente con + y el código del país, un espacio y el número (ej: +505 88888888).",
+      "badge_not_visitor": "La tarjeta {uid} es de {name} ({role}), no de un visitante."
+    },
+    "wipe": {
+      "confirm_word": "ELIMINAR"
+    }
+  },
+  "gui": {
+    "common": {
+      "cancel": "Cancelar",
+      "ok": "Aceptar",
+      "no_cancel": "No, Cancelar",
+      "unknown": "Desconocido",
+      "unknown_error": "Error desconocido",
+      "missing_fields": "Campos Incompletos",
+      "incomplete_data": "Datos Incompletos",
+      "select_row": "Seleccionar Fila",
+      "badge_uid": "UID Tarjeta:",
+      "name": "Nombre:",
+      "full_name": "Nombre Completo:",
+      "role": "Rol:",
+      "grade": "Grado:",
+      "grade_taught": "Grado que Enseña:",
+      "section": "Sección:",
+      "family_code": "Family ID (Código Familiar):",
+      "family_code_placeholder": "Ej. FAM-0001",
+      "whatsapp_phone": "Teléfono WhatsApp:",
+      "email": "Correo Electrónico:",
+      "guardian1_title": "Madre / Tutora 1 (Acudiente Principal)",
+      "guardian2_title": "Padre / Tutor 2 (Acudiente Secundario - Opcional)",
+      "guardian1_incomplete": "La Madre / Tutora 1 debe tener nombre y teléfono juntos.",
+      "guardian2_incomplete": "El Padre / Tutor 2 debe tener nombre y teléfono juntos si se ingresa."
+    },
+    "scan_tile": {
+      "title": "TERMINAL DE ACCESO QUICKPASS",
+      "gate_closed": "Barrera: CERRADA",
+      "gate_open": "Barrera: ABIERTA ({seconds}s)",
+      "ready": "LISTO PARA ESCANEAR",
+      "prompt": "Acerca tu credencial RFID",
+      "school": "Colegio",
+      "reader_ready": "Lector Listo",
+      "whatsapp_active": "WhatsApp Activo",
+      "no_whatsapp": "Sin WhatsApp",
+      "waiting": "Esperando lectura en sensor RC522...",
+      "recorded": "Registrado: {time} ({date})",
+      "unregistered_name": "No Registrado",
+      "banner": {
+        "unregistered": "TARJETA NO REGISTRADA",
+        "graduate_denied": "ACCESO DENEGADO (GRADUADO)",
+        "inactive_denied": "ACCESO DENEGADO (INACTIVO)",
+        "access_denied": "ACCESO DENEGADO",
+        "check_out": "SALIDA REGISTRADA",
+        "on_time": "ENTRADA PUNTUAL",
+        "late": "ENTRADA TARDE",
+        "granted": "ACCESO AUTORIZADO"
+      }
+    },
+    "live": {
+      "window_title": "Quickpass - Control de Acceso en Vivo",
+      "heading": "CONTROL DE ACCESO Y PUERTA FÍSICA",
+      "mode_access": "MODO CONTROL DE ACCESO ACTIVO (Escaneando RFID)",
+      "mode_capture": "PAUSADO TEMPORALMENTE (Registro de Tarjeta en Progreso)",
+      "mode_standby": "EN ESPERA",
+      "unlock": "Apertura Manual (UNLOCK)",
+      "register_visit": "Registrar Visita",
+      "fullscreen": "Pantalla Completa (F11)",
+      "exit_fullscreen": "Salir de Pantalla Completa",
+      "simulators": "Simuladores de Prueba Rápida:",
+      "simulate_unregistered": "Simular No Registrada",
+      "feed_title": "Registro de Accesos en Vivo (Hoy)",
+      "column": {
+        "time": "Hora",
+        "person": "Estudiante / Personal",
+        "role": "Rol",
+        "grade": "Grado",
+        "result": "Resultado"
+      },
+      "result": {
+        "unregistered": "Denegado (No Registrada)",
+        "graduate_denied": "Denegado (Graduado)",
+        "inactive_denied": "Denegado (Inactivo)",
+        "access_denied": "Denegado",
+        "check_out": "Salida",
+        "on_time": "Puntual",
+        "late": "Tarde",
+        "visit": "Visita",
+        "check_in": "Entrada",
+        "repeat_scan": "Escaneo Repetido",
+        "unknown": "Desconocido"
+      },
+      "simulate_scan": "Simular Escaneo"
+    },
+    "admin_auth": {
+      "default_operation": "Operación Protegida",
+      "window_title": "Autorización de Administrador",
+      "heading": "Autorización Requerida",
+      "description": "La operación '{operation}' requiere permisos de Administrador.\n\nPuede autorizar acercando una tarjeta de Administrador al sensor RFID o introduciendo la Clave Secreta:",
+      "reader_ready": "Lector RFID Listo",
+      "tap_admin_badge": "Pase la tarjeta física de Administrador por el sensor...",
+      "or_key": "O ingrese clave secreta",
+      "key_label": "Clave Secreta de Administrador:",
+      "key_placeholder": "Ingrese clave de administrador...",
+      "approve": "Autorizar",
+      "not_admin": "La tarjeta {uid} no tiene privilegios de Administrador.",
+      "badge_refused": "Credencial no Autorizada",
+      "no_admin_role": "No cuenta con rol de Administrador activo.",
+      "key_empty": "Por favor ingrese la clave secreta.",
+      "key_wrong": "Clave secreta incorrecta.",
+      "description_scan_only": "La operación '{operation}' requiere que un Administrador pase su tarjeta por el sensor RFID. La Clave Secreta no sirve para autorizarla."
+    },
+    "visit": {
+      "window_title": "Registrar Visita - Control de Acceso",
+      "heading": "Registrar Visita Escolar",
+      "description": "Ingrese el nombre completo del visitante y su identificación (cédula o pasaporte). Puede acercar una tarjeta física temporal para asignarla a la visita o continuar directamente:",
+      "reader_ready": "Lector RFID Listo (Opcional)",
+      "tap_badge": "Pase una tarjeta física temporal por el sensor...",
+      "name_placeholder": "Ej. Carlos Alberto Ramirez",
+      "name_label": "Nombre de la Visita:",
+      "id_placeholder": "Ej. 1-1234-5678 (Cédula o Pasaporte)",
+      "id_label": "Documento de Identidad:",
+      "uid_placeholder": "Opcional: UID RFID escaneado",
+      "uid_label": "Tarjeta / UID Asignado:",
+      "submit": "Registrar Visita y Abrir Puerta",
+      "badge_detected": "Tarjeta Detectada",
+      "badge_assigned": "UID físico {uid} asignado a la visita.",
+      "missing": "El Nombre de la visita y su Documento de Identidad son requeridos.",
+      "done_title": "Visita Registrada",
+      "done": "Visita registrada exitosamente:\n\n• Visitante: {name}\n• Documento / ID: {id}\n• Credencial UID: {uid}\n\nLa puerta ha sido abierta.",
+      "done_no_badge": "Visita registrada exitosamente:\n\n• Visitante: {name}\n• Documento / ID: {id}\n• Sin tarjeta\n\nLa puerta ha sido abierta.",
+      "error_title": "No se Pudo Registrar la Visita"
+    },
+    "register": {
+      "window_title": "Registrar Nueva Tarjeta RFID",
+      "heading": "Registro de Nueva Credencial",
+      "tap_badge": "ACERQUE LA TARJETA AL LECTOR RFID",
+      "tap_hint": "Pase la tarjeta física por el sensor RC522 del Arduino...",
+      "holder_box": "Datos del Titular / Estudiante",
+      "uid_placeholder": "Esperando escaneo RFID...",
+      "name_placeholder": "Ej. Juan Manuel Pérez",
+      "family_hint": "Código correlativo sugerido: {code}",
+      "family_linked": "Familia vinculada: {code} (Hermano detectado: {sibling})",
+      "guardian1_name_placeholder": "Nombre completo de la madre",
+      "guardian1_phone_placeholder": "Ej. +505 8888 8888 (WhatsApp)",
+      "guardian1_email_placeholder": "Ej. madre@ejemplo.com (Opcional)",
+      "guardian2_name_placeholder": "Nombre completo del padre",
+      "guardian2_phone_placeholder": "Ej. +505 8777 7777 (WhatsApp)",
+      "guardian2_email_placeholder": "Ej. padre@ejemplo.com (Opcional)",
+      "save": "Guardar y Registrar",
+      "badge_detected": "TARJETA DETECTADA",
+      "badge_captured": "UID físico capturado: {uid}. Proceda a completar los datos.",
+      "badge_taken": "Aviso: La tarjeta ya existe asignada a: {name} ({role})",
+      "badge_free": "Tarjeta disponible y lista para registrar.",
+      "required": "El UID de la tarjeta y el Nombre Completo son obligatorios.",
+      "done_title": "Registro Exitoso",
+      "done": "La tarjeta {uid} asignada a {name} fue registrada exitosamente.",
+      "error_title": "Error al Registrar",
+      "add_admin_operation": "Agregar a {name} como Administrador"
+    },
+    "edit": {
+      "window_title": "Modificar Credencial - {uid}",
+      "heading": "Modificar Credencial ({uid})",
+      "reassign_hint": "Pase una nueva tarjeta si desea reasignar el UID físico",
+      "holder_box": "Datos del Titular",
+      "current_role": "Rol Actual: {role}",
+      "save": "Guardar Cambios",
+      "new_badge": "Nueva tarjeta detectada: {uid} (se reasignará al guardar)",
+      "required": "El UID y el Nombre no pueden estar vacíos.",
+      "done_title": "Modificación Exitosa",
+      "done": "La credencial {uid} fue modificada exitosamente.",
+      "error_title": "Error al Modificar"
+    },
+    "badges": {
+      "heading": "Directorio de Tarjetas",
+      "subheading": "Registro físico RFID, edición y administración de credenciales",
+      "register": "Registrar Tarjeta",
+      "edit": "Modificar",
+      "promote": "Promover (+1)",
+      "delete": "Eliminar",
+      "filter_placeholder": "Filtrar lista por nombre, grado, rol o UID...",
+      "column": {
+        "uid": "UID",
+        "full_name": "Nombre Completo",
+        "family": "Familia",
+        "role": "Rol",
+        "grade": "Grado",
+        "section": "Sección",
+        "guardian1": "Madre / Tutora 1",
+        "guardian1_phone": "Tel. Madre",
+        "guardian2": "Padre / Tutor 2",
+        "guardian2_phone": "Tel. Padre"
+      },
+      "graduate_grade": "{grade} (Graduado)",
+      "inactive_role": "{role} (Inactivo)",
+      "taught_grade": "{grade} (Enseña)",
+      "select_to_edit": "Por favor seleccione una tarjeta de la tabla para modificar.",
+      "select_to_delete": "Por favor seleccione una tarjeta de la tabla para eliminar.",
+      "edit_operation": "Modificar Credencial de {name}",
+      "delete_operation": "Eliminar Tarjeta de {name}",
+      "promote_operation": "Promoción Escolar (+1 Grado)",
+      "promote_confirm_title": "Confirmar Promoción Escolar",
+      "promote_confirm": "La promoción escolar sube un grado a {promoted} estudiantes y gradúa a los {graduated} estudiantes de {final_grade}, el último grado del colegio. Los graduados conservan su historial, pero su tarjeta deja de abrir la puerta.\n\n¿Desea proceder con la promoción?",
+      "promote_yes": "Sí, Promover",
+      "promote_done_title": "Promoción Exitosa",
+      "promote_done": "Promoción escolar completada con éxito:\n\n• Estudiantes promovidos (+1 grado): {promoted}\n• Estudiantes de {final_grade} graduados: {graduated}",
+      "promote_error_title": "Error en Promoción",
+      "promote_error": "Error desconocido al promover.",
+      "delete_confirm_title": "Confirmar Eliminación",
+      "delete_confirm": "¿Está seguro de eliminar definitivamente la tarjeta {uid} asignada a {name}?\n\nEsta acción es irreversible y requiere confirmación.",
+      "delete_yes": "Sí, Eliminar",
+      "delete_done_title": "Eliminación Exitosa",
+      "delete_done": "La tarjeta {uid} asignada a {name} fue eliminada del sistema.",
+      "delete_error_title": "Error al Eliminar",
+      "statistics": "Estadísticas",
+      "wipe_history": "Borrar Historial de Entradas",
+      "wipe_users": "Borrar Todas las Tarjetas"
+    },
+    "search": {
+      "heading": "Búsqueda y Reportes Oficiales de Asistencia",
+      "subheading": "Consulta registros históricos con filtros en tiempo real y expórtalos directamente a libros oficiales de Excel (.xlsx)",
+      "type_label": "Tipo de Búsqueda / Reporte:",
+      "type": {
+        "daily": "Asistencia por Día (Reporte Diario E2)",
+        "person": "Historial por Alumno o Persona (Reporte E1)",
+        "matrix": "Rango de Fechas / Matriz de Asistencia (Reporte E4/E5/E6)",
+        "general": "Registro General de Entradas y Salidas",
+        "others_day": "Profesores, Admins o Visitantes por Día (Reporte E7)",
+        "others_range": "Profesores, Admins o Visitantes por Rango de Fechas (Reporte E8)"
+      },
+      "date": "Fecha:",
+      "start_date": "Fecha Inicio:",
+      "end_date": "Fecha Fin:",
+      "date_picker_format": "dd/MM/yyyy",
+      "all_grades": "Todos los Grados",
+      "all_sections": "Todas",
+      "text_placeholder": "Nombre del alumno, UID o Código Familiar (FAM-XXXX)...",
+      "person_placeholder": "Nombre, UID o FAM-XXXX (Requerido)",
+      "filter_placeholder": "Filtrar por texto o FAM-XXXX...",
+      "search": "Buscar Registros",
+      "export": "Exportar a Excel (.xlsx)",
+      "open_folder": "Abrir Carpeta de Reportes",
+      "total_none": "Total: 0 registros encontrados",
+      "total_daily": "Total: {total} estudiantes ({present} presentes, {absent} ausentes)",
+      "total_person": "Total: {days} días registrados para {people} persona(s)",
+      "total_matrix": "Total: {students} estudiantes en matriz ({days} días de clase)",
+      "total_general": "Total: {events} eventos registrados en la fecha",
+      "column": {
+        "date": "Fecha",
+        "student": "Estudiante",
+        "grade_section": "Grado y Sección",
+        "check_in": "Hora Entrada",
+        "check_out": "Hora Salida",
+        "status": "Estado",
+        "person": "Estudiante / Persona",
+        "role": "Rol",
+        "punctuality": "Puntualidad",
+        "names": "Nombres",
+        "grade_section_short": "Grado-Sección",
+        "present": "Presentes",
+        "late": "Tardes",
+        "absent": "Ausentes",
+        "time": "Hora",
+        "staff": "Estudiante / Personal",
+        "grade": "Grado",
+        "event": "Evento",
+        "id": "ID"
+      },
+      "event": {
+        "check_in": "Entrada",
+        "check_out": "Salida"
+      },
+      "bad_range_title": "Rango de Fechas",
+      "bad_range": "La fecha de inicio debe ser anterior o igual a la fecha de fin.",
+      "no_results_title": "Sin Resultados",
+      "no_student": "No se encontró ningún estudiante para exportar.",
+      "general_log_sheet": "Registro_Accesos",
+      "general_log_file": "Registro_General_{date}",
+      "export_done_title": "Exportación a Excel Exitosa",
+      "export_done": "El libro oficial de Excel ha sido generado con éxito:\n\n{file}",
+      "open_folder_button": "Abrir Carpeta",
+      "export_error_title": "Error al Exportar",
+      "unexpected_title": "Error Inesperado",
+      "unexpected": "Error al generar reporte: {error}",
+      "scan_badge": "Escanear Tarjeta",
+      "total_others_day": "Total: {people} {role}",
+      "total_others_range": "Total: {people} {role} en {days} días de clase"
+    },
+    "main": {
+      "window_title": "Quickpass - Sistema de Asistencia y Control Escolar",
+      "access_standby": "Acceso: En Espera",
+      "access_active": "Acceso: Activo (Escaneando)",
+      "access_paused": "Acceso: Pausado (Registro)",
+      "open_live": "Abrir Acceso en Vivo",
+      "nav": {
+        "search": "Búsqueda y Reportes",
+        "badges": "Gestión de Tarjetas",
+        "settings": "Configuración del Colegio"
+      },
+      "searching": "Buscando Conexión...",
+      "arduino_connected": "Arduino Conectado"
+    },
+    "weekday": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    },
+    "wizard": {
+      "window_title": "Quickpass - Configuración Inicial",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "finish": "Terminar",
+      "language_name": "Español",
+      "language": {
+        "title": "Idioma del colegio",
+        "subtitle": "Elija el idioma en que su colegio usará Quickpass. Puede cambiarlo después en Configuración del Colegio."
+      },
+      "structure": {
+        "title": "Grados y secciones",
+        "subtitle": "Agregue los grados en orden, del primero al último, y las secciones en que se dividen."
+      },
+      "days": {
+        "title": "Días de clase y horario",
+        "subtitle": "Elija los días de la semana con clases, la hora límite de llegada y la espera entre la entrada y la salida. Los feriados se agregan después en Configuración del Colegio."
+      },
+      "key": {
+        "title": "Clave secreta de administrador",
+        "subtitle": "La clave reemplaza la tarjeta de un administrador para aprobar cambios protegidos si la tarjeta se pierde. Guárdela en un lugar seguro.",
+        "hint": "Mínimo {min} caracteres."
+      }
+    },
+    "settings": {
+      "heading": "Configuración del Colegio",
+      "subheading": "Las políticas del colegio. Guardar requiere aprobación de un administrador, y Cloud Sync lleva los cambios a Supabase.",
+      "language": "Idioma del colegio",
+      "grades": "Grados (en orden)",
+      "grades_hint": "Doble clic en un grado para renombrarlo. Los grados nuevos van al final y solo se puede quitar el último.",
+      "grade_placeholder": "Nombre del grado",
+      "add_grade": "Agregar grado",
+      "remove_last_grade": "Quitar el último",
+      "sections": "Secciones",
+      "sections_hint": "Doble clic en una sección para renombrarla; sus estudiantes la conservan con el nombre nuevo.",
+      "section_placeholder": "Nombre de la sección",
+      "add_section": "Agregar sección",
+      "remove_section": "Quitar la seleccionada",
+      "weekdays": "Días de la semana con clases",
+      "holidays": "Feriados y vacaciones",
+      "holidays_hint": "Un feriado no es día de clase: nadie queda ausente ese día.",
+      "add_holiday": "Agregar feriado",
+      "remove_holiday": "Quitar el seleccionado",
+      "schedule": "Horario",
+      "late_threshold": "Hora límite de llegada:",
+      "time_picker_format": "HH:mm:ss",
+      "cooldown": "Espera entre entrada y salida:",
+      "secret_key": "Clave secreta de administrador",
+      "new_key": "Nueva clave:",
+      "confirm_key": "Repita la clave:",
+      "key_hint": "Déjela en blanco para conservar la clave actual. Mínimo {min} caracteres.",
+      "save": "Guardar cambios",
+      "discard": "Descartar cambios",
+      "save_operation": "Guardar la configuración del colegio",
+      "saved_title": "Configuración guardada",
+      "saved": "La configuración del colegio se guardó.",
+      "error_title": "No se pudo guardar"
+    },
+    "demo": {
+      "uid_placeholder": "UID de una tarjeta (modo demostración)",
+      "use_uid": "Usar UID"
+    },
+    "stats": {
+      "window_title": "Estadísticas del Sistema",
+      "heading": "Estadísticas del Sistema",
+      "total_users": "Personas registradas",
+      "total_check_ins": "Entradas registradas",
+      "students_by_grade": "Estudiantes por grado",
+      "teachers_by_grade": "Profesores por grado que enseñan",
+      "by_role": "Personas por rol",
+      "recent_check_ins": "Entradas de los últimos días",
+      "role": {
+        "student": "Estudiantes",
+        "teacher": "Profesores",
+        "admin": "Administradores",
+        "visitor": "Visitantes",
+        "graduate": "Graduados"
+      }
+    },
+    "wipe": {
+      "password_label": "Contraseña de borrado (WIPE_PASSWORD):",
+      "confirm_label": "Escriba {word} para confirmar:",
+      "error_title": "No se Pudo Borrar",
+      "done_title": "Borrado Completado",
+      "users": {
+        "window_title": "Borrar Todas las Tarjetas",
+        "heading": "Borrar Todas las Tarjetas",
+        "description": "Se borrarán todas las tarjetas con sus datos, acudientes incluidos. El historial de entradas se conserva. Antes de borrar se guarda una copia de seguridad de la base de datos de esta estación.",
+        "button": "Borrar Todas las Tarjetas",
+        "done": "Se borraron todas las tarjetas. La copia de seguridad quedó en {backup}."
+      },
+      "history": {
+        "window_title": "Borrar el Historial de Entradas",
+        "heading": "Borrar el Historial de Entradas",
+        "description": "Se borrarán las entradas, salidas e incidentes de seguridad guardados en esta estación. Las tarjetas se conservan. Lo que Cloud Sync ya envió a Supabase no se borra. Antes de borrar se guarda una copia de seguridad de la base de datos de esta estación.",
+        "button": "Borrar el Historial",
+        "done": "Se borró el historial de entradas de esta estación. La copia de seguridad quedó en {backup}."
+      }
+    },
+    "badge_scan": {
+      "window_title": "Buscar por Tarjeta",
+      "heading": "Pase la Tarjeta",
+      "tap_badge": "Pase por el sensor RFID la tarjeta de la persona cuyo historial desea ver."
+    }
+  }
+}

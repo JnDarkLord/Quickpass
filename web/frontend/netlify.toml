@@ -1,0 +1,5 @@
+# Netlify: answer every path with the portal's index.html, so its client-side routes load directly.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

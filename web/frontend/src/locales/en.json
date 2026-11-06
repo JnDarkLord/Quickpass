@@ -1,0 +1,243 @@
+{
+  "app": {
+    "title": "Quickpass | School Portal",
+    "school_portal": "School Portal",
+    "logo_alt": "Quickpass Logo",
+    "loading_session": "Loading session...",
+    "settings_unavailable": "The School Settings could not be loaded. Check the connection and refresh the page."
+  },
+  "role": {
+    "teacher": "Teacher",
+    "admin": "Administrator"
+  },
+  "status": {
+    "on_time": "On Time",
+    "late": "Late",
+    "departed": "Checked Out",
+    "absent": "Absent",
+    "no_classes": "No Classes"
+  },
+  "mark": {
+    "present": "P",
+    "late": "L",
+    "absent": "A"
+  },
+  "common": {
+    "refresh": "Refresh",
+    "search": "Search",
+    "cancel": "Cancel",
+    "uid": "UID: {uid}",
+    "grade_section": "{grade} {section}",
+    "section": "Section {section}",
+    "in_school": "In School",
+    "holiday_notice": "{date} is a holiday: nobody is marked absent.",
+    "closed_notice": "The School has no classes on {date}: nobody is marked absent."
+  },
+  "column": {
+    "student": "Student",
+    "section": "Section",
+    "grade_section": "Grade & Section",
+    "family_code": "Family Code",
+    "date": "Date",
+    "check_in_time": "Check-in Time",
+    "check_out_time": "Check-out Time",
+    "status": "Status",
+    "daily_marks": "Daily Marks",
+    "present_days": "Present Days",
+    "late_days": "Late Arrivals",
+    "absences": "Absences",
+    "punctuality": "Punctuality"
+  },
+  "export": {
+    "student_id": "Student ID",
+    "full_name": "Full Name",
+    "badge_uid": "Badge UID",
+    "grade": "Grade",
+    "punctuality_percent": "Punctuality (%)"
+  },
+  "nav": {
+    "family_code": "Code: {code}",
+    "admin_mode": "Admin Mode:",
+    "admin_mode_hint": "User View Simulation",
+    "admin_portal": "Admin Portal",
+    "view_as_teacher": "View as Teacher",
+    "view_as_guardian": "View as Guardian",
+    "day_view": "Day View",
+    "year_view": "Year View",
+    "sign_out_title": "Sign out",
+    "sign_out": "Sign Out"
+  },
+  "login": {
+    "hero_title": "Real-Time Access Control & Attendance Tracking",
+    "hero_text": "Official platform for school access control, with smart RFID badges and instant attendance synchronization.",
+    "feature": {
+      "instant_title": "Instant Check-ins",
+      "instant_text": "Check-ins and check-outs recorded immediately with gate badge validation.",
+      "notifications_title": "Guardian Notifications",
+      "notifications_text": "Punctuality tracking, absence monitoring, and confirmation of arrival at school.",
+      "security_title": "Institutional Security",
+      "security_text": "Exclusive access secured with student data protection policies."
+    },
+    "first_time": {
+      "title": "First time on the Portal?",
+      "hint": "Use the \"{link}\" link in the form with your school-registered email to set up your personal password."
+    },
+    "footer_system": "Quickpass Security System",
+    "footer_version": "Web Version 1.0",
+    "tagline": "School Attendance & Access Control Portal",
+    "title": "Sign In",
+    "description": "Exclusive access for Guardians, Teachers, and Administrators.",
+    "access_denied": "Access Denied",
+    "email_label": "Registered Email",
+    "email_placeholder": "example@school.edu",
+    "password_label": "Password",
+    "activate_link": "First time? Activate",
+    "submit": "Sign in with Email",
+    "or_continue": "Or continue with",
+    "google": "Sign in with Google",
+    "no_access": "Don't have access? Only authorized emails registered in school enrollment are permitted.",
+    "error": {
+      "sign_in": "Sign in failed. Please check your credentials.",
+      "activation": "Could not activate the account. Please check the information entered.",
+      "google": "Error during Google authentication.",
+      "unauthorized_email": "This email is not registered in the school system. Please contact the school administration."
+    },
+    "activation": {
+      "title": "Activate Account / First Time",
+      "description": "Set your password by verifying your Authorized Email in the school system.",
+      "success": "Account activated successfully! Redirecting...",
+      "email_label": "Authorized Email",
+      "email_placeholder": "your.email@school.edu",
+      "password_label": "New Password",
+      "password_placeholder": "Minimum {min} characters",
+      "confirm_label": "Confirm Password",
+      "confirm_placeholder": "Repeat your password",
+      "mismatch": "Passwords do not match.",
+      "too_short": "Password must be at least {min} characters.",
+      "submitting": "Activating...",
+      "submit": "Create Password & Sign In"
+    }
+  },
+  "guardian": {
+    "family_title": "Family {name}",
+    "admin_simulation": "Admin Simulation",
+    "subtitle": "Real-time school attendance monitoring for your children.",
+    "family_code_label": "Family Code:",
+    "family_code_input": "Family code",
+    "loading": "Loading school records...",
+    "check_family_code": "Verify the family code entered (e.g. FAM-0001 to FAM-9999).",
+    "day": {
+      "no_students": "No students found for family {family}.",
+      "grade_section": "{grade} • Section {section}",
+      "check_in": "Check-in",
+      "check_out": "Check-out",
+      "on_time_note": "Arrived on time, before the {time} cutoff.",
+      "late_note": "Checked in after the scheduled cutoff (Late).",
+      "departed_note": "School check-out recorded at {time}.",
+      "absent_note": "No entrance gate scan recorded today."
+    },
+    "year": {
+      "select_child": "Select Student:",
+      "child": "{name} ({grade} {section})",
+      "no_records": "No historical records found for family {family}.",
+      "overall_punctuality": "Overall Punctuality"
+    },
+    "calendar": {
+      "title": "Monthly Attendance Calendar",
+      "description": "Daily punctuality status for {name}",
+      "previous_month": "Previous month",
+      "next_month": "Next month",
+      "weekday": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "on_time": "On Time",
+      "late": "Late Arrival",
+      "absent": "Absent",
+      "holiday": "Holiday",
+      "no_classes": "No classes"
+    },
+    "history": {
+      "title": "Daily Attendance History - {name}",
+      "description": "Chronological log of check-ins, check-outs, and punctuality.",
+      "empty": "No attendance records yet."
+    }
+  },
+  "teacher": {
+    "simulating": "Simulating {grade}",
+    "assigned_grade": "Assigned Grade: {grade}",
+    "subtitle": "Attendance control dashboard for all sections of your grade.",
+    "grade_label": "Grade:",
+    "grade_select": "Select grade",
+    "section_label": "Section:",
+    "all_sections": "All",
+    "loading": "Loading student roster...",
+    "day": {
+      "enrolled": "Enrolled in Grade",
+      "present": "Present Today",
+      "late": "Late Today",
+      "absent": "Absent Today",
+      "roster_title": "Today's Attendance Roster ({date})",
+      "roster_description": "Student list for {grade}",
+      "search_placeholder": "Search student...",
+      "empty": "No students found for the selected filters.",
+      "in_class": "In Class"
+    },
+    "year": {
+      "enrollment": "Grade Enrollment",
+      "total_absences": "Total Absences",
+      "average_punctuality": "Average Punctuality",
+      "matrix_title": "Grade Attendance Matrix ({grade})",
+      "matrix_description": "Cumulative summary and punctuality rate per student.",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "export": "Export Matrix (.xlsx)",
+      "print": "Print",
+      "empty": "No attendance data recorded yet.",
+      "export_empty": "No matrix data to export.",
+      "export_sheet": "Attendance_Matrix",
+      "export_file": "Attendance_Matrix_{grade}"
+    }
+  },
+  "admin": {
+    "title": "General Administration Portal",
+    "subtitle": "Centralized school-wide visibility and attendance management.",
+    "loading": "Loading school attendance records...",
+    "export_empty": "No data to export with the selected filters.",
+    "filter": {
+      "date": "Query Date",
+      "from": "From",
+      "to": "To",
+      "grade": "Grade",
+      "all_grades": "All Grades",
+      "section": "Section",
+      "all_sections": "All Sections",
+      "search": "Search Student / UID / Family Code",
+      "search_placeholder": "Name, UID or FAM-XXXX..."
+    },
+    "day": {
+      "total_enrolled": "Total Enrolled",
+      "present": "Present",
+      "late": "Late Arrivals",
+      "absences": "Absences",
+      "attendance_rate": "% Attendance",
+      "feed_title": "Live Attendance Feed - Date: {date}",
+      "feed_description": "Live log of check-in and check-out events with the filters applied.",
+      "empty": "No records match the selected criteria.",
+      "export_sheet": "Today_Attendance",
+      "export_file": "Quickpass_Attendance_{date}"
+    },
+    "year": {
+      "title": "Consolidated Annual Attendance Matrix ({start} to {end})",
+      "description": "Cumulative attended days, late arrivals, and school-wide punctuality rate.",
+      "empty": "No records found in the selected date range.",
+      "export_sheet": "Annual_History",
+      "export_file": "Quickpass_History_{start}_to_{end}"
+    }
+  }
+}
