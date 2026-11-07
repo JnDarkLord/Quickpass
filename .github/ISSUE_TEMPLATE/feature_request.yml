@@ -1,0 +1,19 @@
+name: Feature Request
+description: Propose an improvement for Schools running Quickpass
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: School need or problem
+      description: What situation at a School would this help solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: How should it work in Quickpass (desktop window, Door Gate, reports, or web portal)?
+    validations:
+      required: true

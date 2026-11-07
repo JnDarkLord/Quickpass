@@ -1,0 +1,57 @@
+name: Bug Report
+description: Report something broken in the desktop program, Door Gate firmware, web portal, or Cloud Sync
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **Student Privacy:** Never include real Students' or Guardians' names, phone numbers, emails, Badge UIDs, `.db` files, or `.env` keys. Use synthetic examples instead.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Desktop program (PySide6 / SQLite / Excel reports / SMS)
+        - Door Gate hardware & Arduino firmware
+        - Web portal (React)
+        - Supabase schema, RLS, or Cloud Sync
+        - Documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: What did you expect to happen, and what happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python / Node.js version, School Language (es or en), and commit SHA
+      placeholder: "Windows 11, Python 3.12, Spanish, commit 98b97a9"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I verified this report contains no real Student/Guardian personal data or secret keys.
+          required: true

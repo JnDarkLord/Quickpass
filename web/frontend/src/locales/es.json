@@ -1,0 +1,243 @@
+{
+  "app": {
+    "title": "Quickpass | Portal Escolar",
+    "school_portal": "Portal Escolar",
+    "logo_alt": "Logo de Quickpass",
+    "loading_session": "Cargando sesión...",
+    "settings_unavailable": "No se pudo cargar la configuración del colegio. Revise la conexión y actualice la página."
+  },
+  "role": {
+    "teacher": "Profesor",
+    "admin": "Administrador"
+  },
+  "status": {
+    "on_time": "Puntual",
+    "late": "Tarde",
+    "departed": "Salida",
+    "absent": "Ausente",
+    "no_classes": "Sin Clases"
+  },
+  "mark": {
+    "present": "P",
+    "late": "T",
+    "absent": "A"
+  },
+  "common": {
+    "refresh": "Actualizar",
+    "search": "Buscar",
+    "cancel": "Cancelar",
+    "uid": "UID: {uid}",
+    "grade_section": "{grade} {section}",
+    "section": "Sección {section}",
+    "in_school": "En el Colegio",
+    "holiday_notice": "El {date} es feriado: no se registran ausencias.",
+    "closed_notice": "El colegio no tiene clases el {date}: no se registran ausencias."
+  },
+  "column": {
+    "student": "Estudiante",
+    "section": "Sección",
+    "grade_section": "Grado y Sección",
+    "family_code": "Código Familiar",
+    "date": "Fecha",
+    "check_in_time": "Hora Entrada",
+    "check_out_time": "Hora Salida",
+    "status": "Estado",
+    "daily_marks": "Marcas Diarias",
+    "present_days": "Días Presente",
+    "late_days": "Llegadas Tarde",
+    "absences": "Ausencias",
+    "punctuality": "Puntualidad"
+  },
+  "export": {
+    "student_id": "ID Estudiante",
+    "full_name": "Nombre Completo",
+    "badge_uid": "UID del Carnet",
+    "grade": "Grado",
+    "punctuality_percent": "Puntualidad (%)"
+  },
+  "nav": {
+    "family_code": "Código: {code}",
+    "admin_mode": "Modo Administrador:",
+    "admin_mode_hint": "Simulación de Vistas de Usuario",
+    "admin_portal": "Panel Administrador",
+    "view_as_teacher": "Ver como Docente",
+    "view_as_guardian": "Ver como Acudiente",
+    "day_view": "Hoy (Día)",
+    "year_view": "Historial (Año)",
+    "sign_out_title": "Cerrar sesión",
+    "sign_out": "Salir"
+  },
+  "login": {
+    "hero_title": "Control de Asistencia y Acceso en Tiempo Real",
+    "hero_text": "Plataforma oficial para la supervisión y control de accesos escolares mediante carnets RFID inteligentes y sincronización inmediata.",
+    "feature": {
+      "instant_title": "Marcaje Inmediato",
+      "instant_text": "Entradas y salidas registradas al instante con validación de carnet en puerta.",
+      "notifications_title": "Notificaciones para Padres",
+      "notifications_text": "Monitoreo de puntualidad, ausencias y confirmación de llegada a la escuela.",
+      "security_title": "Seguridad Institucional",
+      "security_text": "Acceso exclusivo con políticas de protección de datos estudiantiles."
+    },
+    "first_time": {
+      "title": "¿Primera vez en el Portal?",
+      "hint": "Utiliza el enlace \"{link}\" en el formulario con tu correo registrado en el colegio para crear tu clave personal."
+    },
+    "footer_system": "Sistema de Seguridad Quickpass",
+    "footer_version": "Versión Web 1.0",
+    "tagline": "Portal de Asistencia y Control Escolar",
+    "title": "Iniciar Sesión",
+    "description": "Acceso exclusivo para Padres de Familia, Profesores y Administradores.",
+    "access_denied": "Acceso Denegado",
+    "email_label": "Correo Electrónico Registrado",
+    "email_placeholder": "ejemplo@escuela.edu",
+    "password_label": "Contraseña",
+    "activate_link": "¿Primera vez? Activar",
+    "submit": "Ingresar con Correo",
+    "or_continue": "O continuar con",
+    "google": "Iniciar Sesión con Google",
+    "no_access": "¿No tienes acceso? Solo se permiten correos autorizados y registrados en la matrícula escolar.",
+    "error": {
+      "sign_in": "Error al iniciar sesión. Verifique sus credenciales.",
+      "activation": "No se pudo activar la cuenta. Verifique los datos ingresados.",
+      "google": "Error en autenticación con Google.",
+      "unauthorized_email": "Este correo no está registrado en el sistema escolar. Comuníquese con la administración."
+    },
+    "activation": {
+      "title": "Activar Cuenta / Primera Vez",
+      "description": "Configure su contraseña verificando su Correo Autorizado en el sistema escolar.",
+      "success": "¡Cuenta activada con éxito! Redirigiendo...",
+      "email_label": "Correo Autorizado",
+      "email_placeholder": "su.correo@escuela.edu",
+      "password_label": "Nueva Contraseña",
+      "password_placeholder": "Mínimo {min} caracteres",
+      "confirm_label": "Confirmar Contraseña",
+      "confirm_placeholder": "Repita su contraseña",
+      "mismatch": "Las contraseñas no coinciden.",
+      "too_short": "La contraseña debe tener al menos {min} caracteres.",
+      "submitting": "Activando...",
+      "submit": "Crear Contraseña e Ingresar"
+    }
+  },
+  "guardian": {
+    "family_title": "Familia {name}",
+    "admin_simulation": "Simulación Admin",
+    "subtitle": "Monitoreo de asistencia escolar en tiempo real para sus hijos.",
+    "family_code_label": "Código Familiar:",
+    "family_code_input": "Código de familia",
+    "loading": "Cargando registros escolares...",
+    "check_family_code": "Verifique el código familiar ingresado (ej: FAM-0001 a FAM-9999).",
+    "day": {
+      "no_students": "No se encontraron estudiantes para la familia {family}.",
+      "grade_section": "{grade} • Sección {section}",
+      "check_in": "Entrada",
+      "check_out": "Salida",
+      "on_time_note": "Llegó puntual antes del límite de las {time}.",
+      "late_note": "Ingresó después del horario establecido (Tardanza).",
+      "departed_note": "Salida del colegio registrada a las {time}.",
+      "absent_note": "No se ha registrado ingreso en el portón hoy."
+    },
+    "year": {
+      "select_child": "Seleccionar Hijo:",
+      "child": "{name} ({grade} {section})",
+      "no_records": "No hay registros históricos para la familia {family}.",
+      "overall_punctuality": "Puntualidad General"
+    },
+    "calendar": {
+      "title": "Calendario Mensual de Asistencia",
+      "description": "Visualice el estado diario de puntualidad de {name}",
+      "previous_month": "Mes anterior",
+      "next_month": "Mes siguiente",
+      "weekday": {
+        "sun": "Dom",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mié",
+        "thu": "Jue",
+        "fri": "Vie",
+        "sat": "Sáb"
+      },
+      "on_time": "Puntual",
+      "late": "Llegada Tarde",
+      "absent": "Ausente",
+      "holiday": "Feriado",
+      "no_classes": "Sin clases"
+    },
+    "history": {
+      "title": "Historial Diario de Asistencia - {name}",
+      "description": "Registro cronológico de entradas, salidas y puntualidad.",
+      "empty": "No hay registros históricos de asistencia acumulados aún."
+    }
+  },
+  "teacher": {
+    "simulating": "Simulando {grade}",
+    "assigned_grade": "Grado Asignado: {grade}",
+    "subtitle": "Panel de control de asistencia para todas las secciones de su grado.",
+    "grade_label": "Grado:",
+    "grade_select": "Seleccionar grado",
+    "section_label": "Sección:",
+    "all_sections": "Todas",
+    "loading": "Cargando nómina de estudiantes...",
+    "day": {
+      "enrolled": "Matrícula en Grado",
+      "present": "Presentes Hoy",
+      "late": "Llegadas Tarde",
+      "absent": "Ausentes Hoy",
+      "roster_title": "Nómina de Asistencia de Hoy ({date})",
+      "roster_description": "Listado de alumnos de {grade}",
+      "search_placeholder": "Buscar estudiante...",
+      "empty": "No se encontraron estudiantes para los filtros seleccionados.",
+      "in_class": "En clase"
+    },
+    "year": {
+      "enrollment": "Matrícula del Grado",
+      "total_absences": "Ausencias Totales",
+      "average_punctuality": "Puntualidad Promedio",
+      "matrix_title": "Matriz de Asistencia del Grado ({grade})",
+      "matrix_description": "Resumen acumulativo y porcentaje de puntualidad por estudiante.",
+      "start_date": "Fecha Inicio",
+      "end_date": "Fecha Fin",
+      "export": "Exportar Matriz (.xlsx)",
+      "print": "Imprimir",
+      "empty": "No se registran datos acumulativos de asistencia aún.",
+      "export_empty": "No hay datos de matriz para exportar.",
+      "export_sheet": "Matriz_Asistencia",
+      "export_file": "Matriz_Asistencia_{grade}"
+    }
+  },
+  "admin": {
+    "title": "Panel de Administración General",
+    "subtitle": "Visibilidad y control centralizado de asistencia de todo el centro educativo.",
+    "loading": "Cargando registros escolares generales...",
+    "export_empty": "No hay datos para exportar con los filtros seleccionados.",
+    "filter": {
+      "date": "Fecha a Consultar",
+      "from": "Desde",
+      "to": "Hasta",
+      "grade": "Grado",
+      "all_grades": "Todos los Grados",
+      "section": "Sección",
+      "all_sections": "Todas las Secciones",
+      "search": "Buscar Alumno / UID / Código Familiar",
+      "search_placeholder": "Nombre, UID o FAM-XXXX..."
+    },
+    "day": {
+      "total_enrolled": "Matrícula Total",
+      "present": "Presentes",
+      "late": "Tardanzas",
+      "absences": "Ausencias",
+      "attendance_rate": "% Asistencia",
+      "feed_title": "Flujo de Asistencia Escolar - Fecha: {date}",
+      "feed_description": "Listado en vivo de eventos de entrada y salida con filtros aplicados.",
+      "empty": "No hay registros que coincidan con los criterios seleccionados.",
+      "export_sheet": "Asistencia_Hoy",
+      "export_file": "Quickpass_Asistencia_{date}"
+    },
+    "year": {
+      "title": "Matriz Consolidada de Asistencia Anual ({start} a {end})",
+      "description": "Acumulado de días asistidos, tardanzas y tasa de puntualidad institucional.",
+      "empty": "No se encontraron registros en el rango de fechas seleccionado.",
+      "export_sheet": "Historial_Anual",
+      "export_file": "Quickpass_Historial_{start}_a_{end}"
+    }
+  }
+}

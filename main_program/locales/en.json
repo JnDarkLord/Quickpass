@@ -1,0 +1,614 @@
+{
+  "lcd": {
+    "idle": {
+      "line1": "QUICKPASS",
+      "line2": "Tap your badge"
+    },
+    "check_in": {
+      "welcome": "Welcome {name}",
+      "on_time": "Arrived on time",
+      "late": "Arrived late"
+    },
+    "check_out": {
+      "goodbye": "Goodbye {name}",
+      "goodbye_anonymous": "Goodbye!",
+      "done": "Checked out"
+    },
+    "repeat_scan": {
+      "granted": "Access granted"
+    },
+    "visitor": {
+      "check_in": "Visitor: {name}",
+      "check_out": "Leaving: {name}",
+      "badge": "ID: {id}"
+    },
+    "deny": {
+      "header": "Access Denied",
+      "unregistered": "Not Registered",
+      "graduate": "Graduated",
+      "inactive": "Inactive"
+    },
+    "unlock": {
+      "line1": "Remote Access",
+      "line2": "Door Open"
+    },
+    "standby_scan": {
+      "line1": "Quickpass Ready",
+      "line2": "Please go ahead"
+    },
+    "capture": {
+      "badge_read": {
+        "line1": "Badge Read",
+        "line2": "{uid}"
+      }
+    },
+    "admin_auth": {
+      "line1": "Admin Approval",
+      "line2": "Tap Admin badge"
+    },
+    "visit_registration": {
+      "line1": "Visitor Sign-in",
+      "line2": "Tap a badge"
+    },
+    "badge_registration": {
+      "line1": "Tap the badge",
+      "line2": "on the reader"
+    },
+    "badge_added": {
+      "line1": "Badge Added",
+      "line2": "Successfully"
+    },
+    "badge_reassign": {
+      "line1": "Tap new badge",
+      "line2": "to reassign"
+    },
+    "badge_updated": {
+      "line1": "Badge Updated",
+      "line2": "Successfully"
+    },
+    "grade_promotion": {
+      "line1": "Grade Promotion",
+      "line2": "Completed"
+    },
+    "badge_deleted": {
+      "line1": "Badge Deleted",
+      "line2": "Successfully"
+    },
+    "badge_search": {
+      "line1": "Find a Person",
+      "line2": "Tap the badge"
+    }
+  },
+  "sms": {
+    "arrival": "{name} entered the school today {date} at {time} ({status}).",
+    "leaving": "{name} left the school today {date} at {time}.",
+    "admin_alert": "An unidentified person attempted to enter the school on {date} at {time}."
+  },
+  "status": {
+    "on_time": "On Time",
+    "late": "Late",
+    "absent": "Absent",
+    "visit": "Visit"
+  },
+  "role": {
+    "student": "Student",
+    "teacher": "Teacher",
+    "admin": "Administrator",
+    "visitor": "Visitor",
+    "graduate": "Graduate"
+  },
+  "settings": {
+    "error": {
+      "language": "Choose the School Language: Spanish or English.",
+      "grades_empty": "Add at least one Grade.",
+      "grade_blank": "Every Grade needs a name.",
+      "grade_duplicate": "Two Grades have the same name.",
+      "sections_empty": "Add at least one Section.",
+      "section_blank": "Every Section needs a name.",
+      "section_duplicate": "Two Sections have the same name.",
+      "section_reserved": "\"ALL\" cannot be a Section name.",
+      "section_too_long": "A Section name has at most 10 characters.",
+      "weekdays": "Choose at least one school weekday.",
+      "cooldown": "The wait before Check-out cannot be negative.",
+      "secret_key": "Type an Admin Secret Key.",
+      "grade_in_use": "The Grade \"{grade}\" still has {count} active Students or Teachers. Move them to another Grade before removing it.",
+      "section_in_use": "The Section \"{section}\" still has {count} active Students. Move them to another Section before removing it.",
+      "secret_key_short": "The Admin Secret Key needs at least {min} characters.",
+      "secret_key_mismatch": "The two keys do not match."
+    }
+  },
+  "report": {
+    "file": {
+      "e1": "Search for {name}",
+      "e2": "Whole school, {date}",
+      "e3": "By grade, {date}, {grade}",
+      "e4": "All grades from {start} to {end}",
+      "e5": "{grade} from {start} to {end}",
+      "e6": "{grade} from {start} to {end}",
+      "e7": "Search for {role} - {date}",
+      "e8": "Search for {role} from {start} to {end}"
+    },
+    "sheet": {
+      "list": "Sheet1",
+      "matrix": "Report"
+    },
+    "header": {
+      "check_in_date": "Check-in date",
+      "check_in_time": "Check-in time",
+      "check_out_time": "Check-out time",
+      "time": "Time",
+      "date": "Date",
+      "role": "Role",
+      "grade_section": "Grade & Section",
+      "grade_taught": "Grade taught",
+      "status": "Status",
+      "names": "Name",
+      "name": "Name",
+      "full_name": "Full name",
+      "times_present": "Times present",
+      "times_late": "Times late",
+      "times_absent": "Times absent"
+    },
+    "mark": {
+      "present": "P",
+      "late": "L",
+      "absent": "A"
+    },
+    "role_plural": {
+      "teacher": "teachers",
+      "admin": "admins",
+      "visitor": "visitors"
+    },
+    "error": {
+      "folder": "Could not create the Reports folder: {error}",
+      "file": "Could not create the Excel file: {error}",
+      "no_data": "There is no data to export.",
+      "no_students": "No students found in {grade}."
+    }
+  },
+  "admin": {
+    "error": {
+      "invalid_uid": "Invalid badge UID.",
+      "badge_exists": "This badge already exists.",
+      "invalid_role": "Invalid role. Operation cancelled.",
+      "name_empty": "The name cannot be empty.",
+      "grade_range": "Choose a Grade from the School's list.",
+      "section_empty": "The section cannot be empty.",
+      "guardian_incomplete": "Each Guardian needs both a name and a phone number.",
+      "too_many_guardians": "At most two Guardians are allowed.",
+      "taught_grade_range": "Choose the Grade taught from the School's list.",
+      "not_admin": "That badge is NOT an Admin badge. Cancelled.",
+      "badge_not_found": "Badge not found.",
+      "same_badge": "You cannot approve with the same badge. Cancelled.",
+      "cancelled": "Operation cancelled.",
+      "wipe_password_missing": "WIPE_PASSWORD is not set. Operation cancelled.",
+      "wrong_password": "Wrong password. Operation cancelled.",
+      "bad_confirmation": "Confirmation not valid. Operation cancelled.",
+      "backup_failed": "Could not create the backup: {error}",
+      "section_unknown": "Choose a Section from the School's list: {sections}.",
+      "name_letters": "The name needs at least one letter.",
+      "guardian_name_letters": "Each Guardian's name needs at least one letter.",
+      "phone_format": "Write each Guardian's phone with + and the country code, a space and the number (e.g. +1 2025550123).",
+      "badge_not_visitor": "Badge {uid} belongs to {name} ({role}), not to a visitor."
+    },
+    "wipe": {
+      "confirm_word": "DELETE"
+    }
+  },
+  "gui": {
+    "common": {
+      "cancel": "Cancel",
+      "ok": "OK",
+      "no_cancel": "No, Cancel",
+      "unknown": "Unknown",
+      "unknown_error": "Unknown error",
+      "missing_fields": "Missing Fields",
+      "incomplete_data": "Incomplete Details",
+      "select_row": "Select a Row",
+      "badge_uid": "Badge UID:",
+      "name": "Name:",
+      "full_name": "Full Name:",
+      "role": "Role:",
+      "grade": "Grade:",
+      "grade_taught": "Grade Taught:",
+      "section": "Section:",
+      "family_code": "Family Code:",
+      "family_code_placeholder": "e.g. FAM-0001",
+      "whatsapp_phone": "WhatsApp Phone:",
+      "email": "Email:",
+      "guardian1_title": "Mother / Guardian 1 (Primary Guardian)",
+      "guardian2_title": "Father / Guardian 2 (Secondary Guardian - Optional)",
+      "guardian1_incomplete": "Mother / Guardian 1 needs both a name and a phone number.",
+      "guardian2_incomplete": "Father / Guardian 2 needs both a name and a phone number when given."
+    },
+    "scan_tile": {
+      "title": "QUICKPASS ACCESS TERMINAL",
+      "gate_closed": "Door Gate: CLOSED",
+      "gate_open": "Door Gate: OPEN ({seconds}s)",
+      "ready": "READY TO SCAN",
+      "prompt": "Tap your RFID badge",
+      "school": "School",
+      "reader_ready": "Reader Ready",
+      "whatsapp_active": "WhatsApp Active",
+      "no_whatsapp": "No WhatsApp",
+      "waiting": "Waiting for a badge on the RC522 reader...",
+      "recorded": "Recorded: {time} ({date})",
+      "unregistered_name": "Unregistered",
+      "banner": {
+        "unregistered": "UNREGISTERED BADGE",
+        "graduate_denied": "ACCESS DENIED (GRADUATE)",
+        "inactive_denied": "ACCESS DENIED (INACTIVE)",
+        "access_denied": "ACCESS DENIED",
+        "check_out": "CHECK-OUT RECORDED",
+        "on_time": "ON-TIME CHECK-IN",
+        "late": "LATE CHECK-IN",
+        "granted": "ACCESS GRANTED"
+      }
+    },
+    "live": {
+      "window_title": "Quickpass - Live Access Control",
+      "heading": "ACCESS CONTROL AND DOOR GATE",
+      "mode_access": "ACCESS CONTROL MODE ACTIVE (Scanning RFID)",
+      "mode_capture": "TEMPORARILY PAUSED (Badge Registration in Progress)",
+      "mode_standby": "STANDBY",
+      "unlock": "Manual Unlock (UNLOCK)",
+      "register_visit": "Register Visitor",
+      "fullscreen": "Full Screen (F11)",
+      "exit_fullscreen": "Exit Full Screen",
+      "simulators": "Quick Test Simulators:",
+      "simulate_unregistered": "Simulate Unregistered Badge",
+      "feed_title": "Live Access Feed (Today)",
+      "column": {
+        "time": "Time",
+        "person": "Student / Staff",
+        "role": "Role",
+        "grade": "Grade",
+        "result": "Result"
+      },
+      "result": {
+        "unregistered": "Denied (Unregistered)",
+        "graduate_denied": "Denied (Graduate)",
+        "inactive_denied": "Denied (Inactive)",
+        "access_denied": "Denied",
+        "check_out": "Check-out",
+        "on_time": "On Time",
+        "late": "Late",
+        "visit": "Visit",
+        "check_in": "Check-in",
+        "repeat_scan": "Repeat Scan",
+        "unknown": "Unknown"
+      },
+      "simulate_scan": "Simulate Scan"
+    },
+    "admin_auth": {
+      "default_operation": "Protected Operation",
+      "window_title": "Admin Approval",
+      "heading": "Approval Required",
+      "description": "'{operation}' needs Admin Approval.\n\nApprove it by tapping an Admin badge on the RFID reader or by typing the Admin Secret Key:",
+      "reader_ready": "RFID Reader Ready",
+      "tap_admin_badge": "Tap an Admin badge on the reader...",
+      "or_key": "Or type the secret key",
+      "key_label": "Admin Secret Key:",
+      "key_placeholder": "Type the Admin Secret Key...",
+      "approve": "Approve",
+      "not_admin": "Badge {uid} is not an Admin badge.",
+      "badge_refused": "Badge Not Authorized",
+      "no_admin_role": "It does not belong to an active Admin.",
+      "key_empty": "Please type the secret key.",
+      "key_wrong": "Wrong secret key.",
+      "description_scan_only": "'{operation}' needs an Admin to tap their badge on the RFID reader. The Admin Secret Key cannot approve it."
+    },
+    "visit": {
+      "window_title": "Register Visitor - Access Control",
+      "heading": "Register a School Visitor",
+      "description": "Type the visitor's full name and ID document (national ID or passport). You can tap a temporary badge to assign it to the visit, or continue without one:",
+      "reader_ready": "RFID Reader Ready (Optional)",
+      "tap_badge": "Tap a temporary badge on the reader...",
+      "name_placeholder": "e.g. Carlos Alberto Ramirez",
+      "name_label": "Visitor Name:",
+      "id_placeholder": "e.g. ID or passport number",
+      "id_label": "ID Document:",
+      "uid_placeholder": "Optional: scanned Badge UID",
+      "uid_label": "Assigned Badge UID:",
+      "submit": "Register Visitor and Open Door",
+      "badge_detected": "Badge Detected",
+      "badge_assigned": "Badge UID {uid} assigned to the visitor.",
+      "missing": "The visitor's name and ID document are required.",
+      "done_title": "Visitor Registered",
+      "done": "Visitor registered:\n\n• Visitor: {name}\n• ID document: {id}\n• Badge UID: {uid}\n\nThe door is open.",
+      "done_no_badge": "Visitor registered:\n\n• Visitor: {name}\n• ID document: {id}\n• No badge\n\nThe door is open.",
+      "error_title": "Could Not Register the Visitor"
+    },
+    "register": {
+      "window_title": "Register a New RFID Badge",
+      "heading": "New Badge Registration",
+      "tap_badge": "TAP THE BADGE ON THE RFID READER",
+      "tap_hint": "Tap the badge on the Arduino's RC522 reader...",
+      "holder_box": "Badge Holder / Student Details",
+      "uid_placeholder": "Waiting for an RFID scan...",
+      "name_placeholder": "e.g. John Smith",
+      "family_hint": "Suggested Family Code: {code}",
+      "family_linked": "Linked family: {code} (sibling found: {sibling})",
+      "guardian1_name_placeholder": "Mother's full name",
+      "guardian1_phone_placeholder": "e.g. +1 555 123 4567 (WhatsApp)",
+      "guardian1_email_placeholder": "e.g. mother@example.com (optional)",
+      "guardian2_name_placeholder": "Father's full name",
+      "guardian2_phone_placeholder": "e.g. +1 555 765 4321 (WhatsApp)",
+      "guardian2_email_placeholder": "e.g. father@example.com (optional)",
+      "save": "Save and Register",
+      "badge_detected": "BADGE DETECTED",
+      "badge_captured": "Badge UID captured: {uid}. Fill in the details.",
+      "badge_taken": "Notice: this badge already belongs to {name} ({role})",
+      "badge_free": "The badge is free and ready to register.",
+      "required": "The Badge UID and the full name are required.",
+      "done_title": "Badge Registered",
+      "done": "Badge {uid} for {name} was registered.",
+      "error_title": "Could Not Register",
+      "add_admin_operation": "Add {name} as an Admin"
+    },
+    "edit": {
+      "window_title": "Edit Badge - {uid}",
+      "heading": "Edit Badge ({uid})",
+      "reassign_hint": "Tap a new badge to give this person a new Badge UID",
+      "holder_box": "Badge Holder Details",
+      "current_role": "Current Role: {role}",
+      "save": "Save Changes",
+      "new_badge": "New badge detected: {uid} (assigned when you save)",
+      "required": "The Badge UID and the name cannot be empty.",
+      "done_title": "Badge Updated",
+      "done": "Badge {uid} was updated.",
+      "error_title": "Could Not Update"
+    },
+    "badges": {
+      "heading": "Badge Directory",
+      "subheading": "Register, edit and manage RFID badges",
+      "register": "Register Badge",
+      "edit": "Edit",
+      "promote": "Promote (+1)",
+      "delete": "Delete",
+      "filter_placeholder": "Filter by name, grade, role or UID...",
+      "column": {
+        "uid": "UID",
+        "full_name": "Full Name",
+        "family": "Family Code",
+        "role": "Role",
+        "grade": "Grade",
+        "section": "Section",
+        "guardian1": "Mother / Guardian 1",
+        "guardian1_phone": "Mother's Phone",
+        "guardian2": "Father / Guardian 2",
+        "guardian2_phone": "Father's Phone"
+      },
+      "graduate_grade": "{grade} (Graduate)",
+      "inactive_role": "{role} (Inactive)",
+      "taught_grade": "{grade} (Teaches)",
+      "select_to_edit": "Select a badge in the table to edit.",
+      "select_to_delete": "Select a badge in the table to delete.",
+      "edit_operation": "Edit {name}'s badge",
+      "delete_operation": "Delete {name}'s badge",
+      "promote_operation": "Grade Promotion (+1 Grade)",
+      "promote_confirm_title": "Confirm Grade Promotion",
+      "promote_confirm": "Grade Promotion moves {promoted} Students up one Grade and graduates the {graduated} Students in {final_grade}, the School's final Grade. Graduates keep their history, but their Badges stop opening the Door Gate.\n\nGo ahead with the Grade Promotion?",
+      "promote_yes": "Yes, Promote",
+      "promote_done_title": "Grade Promotion Done",
+      "promote_done": "Grade Promotion finished:\n\n• Students promoted (+1 Grade): {promoted}\n• {final_grade} Students graduated: {graduated}",
+      "promote_error_title": "Grade Promotion Failed",
+      "promote_error": "Unknown error during the Grade Promotion.",
+      "delete_confirm_title": "Confirm Deletion",
+      "delete_confirm": "Permanently delete badge {uid} for {name}?\n\nThis cannot be undone.",
+      "delete_yes": "Yes, Delete",
+      "delete_done_title": "Badge Deleted",
+      "delete_done": "Badge {uid} for {name} was deleted.",
+      "delete_error_title": "Could Not Delete",
+      "statistics": "Statistics",
+      "wipe_history": "Wipe Attendance History",
+      "wipe_users": "Wipe Every Badge"
+    },
+    "search": {
+      "heading": "Attendance Search and Official Reports",
+      "subheading": "Search past attendance with live filters and export it straight to official Excel workbooks (.xlsx)",
+      "type_label": "Search / Report Type:",
+      "type": {
+        "daily": "Attendance by Day (Daily Report E2)",
+        "person": "History by Student or Person (Report E1)",
+        "matrix": "Date Range / Attendance Matrix (Reports E4/E5/E6)",
+        "general": "General Check-in and Check-out Log",
+        "others_day": "Teachers, Admins or Visitors by Day (Report E7)",
+        "others_range": "Teachers, Admins or Visitors over a Date Range (Report E8)"
+      },
+      "date": "Date:",
+      "start_date": "Start Date:",
+      "end_date": "End Date:",
+      "date_picker_format": "MM/dd/yyyy",
+      "all_grades": "All Grades",
+      "all_sections": "All",
+      "text_placeholder": "Student name, UID or Family Code (FAM-XXXX)...",
+      "person_placeholder": "Name, UID or FAM-XXXX (required)",
+      "filter_placeholder": "Filter by text or FAM-XXXX...",
+      "search": "Search Records",
+      "export": "Export to Excel (.xlsx)",
+      "open_folder": "Open Reports Folder",
+      "total_none": "Total: 0 records found",
+      "total_daily": "Total: {total} Students ({present} present, {absent} absent)",
+      "total_person": "Total: {days} days recorded for {people} person(s)",
+      "total_matrix": "Total: {students} Students in the matrix ({days} School Days)",
+      "total_general": "Total: {events} events recorded on this date",
+      "column": {
+        "date": "Date",
+        "student": "Student",
+        "grade_section": "Grade & Section",
+        "check_in": "Check-in Time",
+        "check_out": "Check-out Time",
+        "status": "Status",
+        "person": "Student / Person",
+        "role": "Role",
+        "punctuality": "Punctuality",
+        "names": "Name",
+        "grade_section_short": "Grade-Section",
+        "present": "Present",
+        "late": "Late",
+        "absent": "Absent",
+        "time": "Time",
+        "staff": "Student / Staff",
+        "grade": "Grade",
+        "event": "Event",
+        "id": "ID"
+      },
+      "event": {
+        "check_in": "Check-in",
+        "check_out": "Check-out"
+      },
+      "bad_range_title": "Date Range",
+      "bad_range": "The start date must be on or before the end date.",
+      "no_results_title": "No Results",
+      "no_student": "No Student found to export.",
+      "general_log_sheet": "Access_Log",
+      "general_log_file": "General_Log_{date}",
+      "export_done_title": "Excel Export Done",
+      "export_done": "The official Excel workbook is ready:\n\n{file}",
+      "open_folder_button": "Open Folder",
+      "export_error_title": "Export Failed",
+      "unexpected_title": "Unexpected Error",
+      "unexpected": "Could not create the report: {error}",
+      "scan_badge": "Scan Badge",
+      "total_others_day": "Total: {people} {role}",
+      "total_others_range": "Total: {people} {role} over {days} School Days"
+    },
+    "main": {
+      "window_title": "Quickpass - School Attendance and Access Control",
+      "access_standby": "Access: Standby",
+      "access_active": "Access: Active (Scanning)",
+      "access_paused": "Access: Paused (Registration)",
+      "open_live": "Open Live Access",
+      "nav": {
+        "search": "Search and Reports",
+        "badges": "Badge Management",
+        "settings": "School Settings"
+      },
+      "searching": "Searching for the Arduino...",
+      "arduino_connected": "Arduino Connected"
+    },
+    "weekday": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "wizard": {
+      "window_title": "Quickpass - First-Run Setup",
+      "heading": "Set up your School",
+      "subtitle": "Configure this station in one place. Everything here can be adjusted later in School Settings.",
+      "finish": "Start Quickpass",
+      "language_name": "English",
+      "rail_tagline": "School attendance and Door Gate access control.",
+      "rail_footer": "Saved on this station for instant offline gate decisions, and synced automatically when Cloud Sync is enabled.",
+      "preview": {
+        "title": "Station Summary",
+        "unset": "Not set yet",
+        "grades_count": "{first} to {last} ({count})",
+        "sections_count": "{names} ({count})",
+        "weekdays_count": "{count} of 7 days"
+      },
+      "language": {
+        "title": "School Language",
+        "subtitle": "Used across the window, Door Gate LCD, Excel reports, text messages, and web portal."
+      },
+      "structure": {
+        "title": "Grades and Sections",
+        "subtitle": "Add Grades in order from first to last (the last Grade graduates at Grade Promotion) and their Sections."
+      },
+      "days": {
+        "title": "School Days and Schedule",
+        "subtitle": "Choose class weekdays, the Late Threshold, and the Check-out wait. Add holidays later in School Settings."
+      },
+      "key": {
+        "title": "Admin Secret Key",
+        "subtitle": "Approves protected changes if an Admin's Badge is lost. Store it somewhere safe.",
+        "hint": "At least {min} characters."
+      }
+    },
+    "settings": {
+      "heading": "School Settings",
+      "subheading": "Your School's policies. Saving needs Admin Approval, and Cloud Sync carries the changes to Supabase.",
+      "language": "School Language",
+      "grades": "Grades (in order)",
+      "grades_hint": "Double-click a Grade to rename it. New Grades go at the end, and only the last one can be removed.",
+      "grade_placeholder": "Grade name",
+      "add_grade": "Add Grade",
+      "remove_last_grade": "Remove Last",
+      "sections": "Sections",
+      "sections_hint": "Double-click a Section to rename it; its Students keep it under the new name.",
+      "section_placeholder": "Section name",
+      "add_section": "Add Section",
+      "remove_section": "Remove Selected",
+      "weekdays": "Weekdays with Classes",
+      "holidays": "Holidays and Breaks",
+      "holidays_hint": "A holiday is not a School Day, so nobody is marked absent on it.",
+      "add_holiday": "Add Holiday",
+      "remove_holiday": "Remove Selected",
+      "schedule": "Schedule",
+      "late_threshold": "Late Threshold:",
+      "time_picker_format": "hh:mm:ss AP",
+      "cooldown": "Wait between Check-in and Check-out:",
+      "secret_key": "Admin Secret Key",
+      "new_key": "New key:",
+      "confirm_key": "Type it again:",
+      "key_hint": "Leave it blank to keep the current key. At least {min} characters.",
+      "save": "Save Changes",
+      "discard": "Discard Changes",
+      "save_operation": "Save the School Settings",
+      "saved_title": "Settings Saved",
+      "saved": "The School Settings were saved.",
+      "error_title": "Could Not Save"
+    },
+    "demo": {
+      "uid_placeholder": "A Badge UID (Demo Mode)",
+      "use_uid": "Use UID"
+    },
+    "stats": {
+      "window_title": "System Statistics",
+      "heading": "System Statistics",
+      "total_users": "Registered people",
+      "total_check_ins": "Recorded Check-ins",
+      "students_by_grade": "Students by Grade",
+      "teachers_by_grade": "Teachers by Grade taught",
+      "by_role": "People by Role",
+      "recent_check_ins": "Check-ins on recent days",
+      "role": {
+        "student": "Students",
+        "teacher": "Teachers",
+        "admin": "Admins",
+        "visitor": "Visitors",
+        "graduate": "Graduates"
+      }
+    },
+    "wipe": {
+      "password_label": "Wipe password (WIPE_PASSWORD):",
+      "confirm_label": "Type {word} to confirm:",
+      "error_title": "Could Not Wipe",
+      "done_title": "Wipe Done",
+      "users": {
+        "window_title": "Wipe Every Badge",
+        "heading": "Wipe Every Badge",
+        "description": "This deletes every Badge and its details, Guardians included. The attendance history stays. A backup of this station's database is saved first.",
+        "button": "Wipe Every Badge",
+        "done": "Every Badge was wiped. The backup is in {backup}."
+      },
+      "history": {
+        "window_title": "Wipe the Attendance History",
+        "heading": "Wipe the Attendance History",
+        "description": "This deletes the Check-ins, Check-outs and security incidents stored at this station. Every Badge stays. What Cloud Sync already sent to Supabase is not deleted. A backup of this station's database is saved first.",
+        "button": "Wipe the History",
+        "done": "This station's attendance history was wiped. The backup is in {backup}."
+      }
+    },
+    "badge_scan": {
+      "window_title": "Search by Badge",
+      "heading": "Tap the Badge",
+      "tap_badge": "Tap the badge of the person whose history you want to see on the RFID reader."
+    }
+  }
+}
