@@ -115,23 +115,25 @@ def test_statistics_count_people_by_the_schools_grade_names_and_by_role(settings
 
     opened(gui.BadgeManagementView(worker)).btn_stats.click()
 
-    assert shown == [[
-        ("Personas registradas", "4"),
-        ("Entradas registradas", "3"),
-        ("Estudiantes por grado", ""),
-        ("Kinder", "2"),
-        ("Profesores por grado que enseñan", ""),
-        ("1st", "1"),
-        ("Personas por rol", ""),
-        ("Estudiantes", "2"),
-        ("Profesores", "1"),
-        ("Administradores", "1"),
-        ("Visitantes", "0"),
-        ("Graduados", "0"),
-        ("Entradas de los últimos días", ""),
-        ("05/10/2026", "1"),
-        ("06/10/2026", "2"),
-    ]]
+    assert shown == [
+        [
+            ("Personas registradas", "4"),
+            ("Entradas registradas", "3"),
+            ("Estudiantes por grado", ""),
+            ("Kinder", "2"),
+            ("Profesores por grado que enseñan", ""),
+            ("1st", "1"),
+            ("Personas por rol", ""),
+            ("Estudiantes", "2"),
+            ("Profesores", "1"),
+            ("Administradores", "1"),
+            ("Visitantes", "0"),
+            ("Graduados", "0"),
+            ("Entradas de los últimos días", ""),
+            ("05/10/2026", "1"),
+            ("06/10/2026", "2"),
+        ]
+    ]
 
 
 # --- Wipes ------------------------------------------------------------------------
@@ -181,7 +183,10 @@ def test_wiping_the_attendance_history_keeps_every_badge_and_a_backup(settings, 
 
     (backup,) = (settings.database_path.parent / "backups").iterdir()
     assert messages == [
-        ("information", f"Se borró el historial de entradas de esta estación. La copia de seguridad quedó en {backup.name}.")
+        (
+            "information",
+            f"Se borró el historial de entradas de esta estación. La copia de seguridad quedó en {backup.name}.",
+        )
     ]
     assert _query(settings, "SELECT COUNT(*) FROM attendance_records") == [(0,)]
     assert [view.table.item(r, 0).text() for r in range(view.table.rowCount())] == ["AA000001"]
@@ -266,8 +271,14 @@ def test_registration_refuses_a_name_without_letters_and_a_phone_without_its_cou
 
 def test_a_guardian_phone_typed_another_way_still_finds_the_siblings_family(settings, worker, opened):
     _add(
-        settings, "AA000001", "student", "Ana Torres", grade=3, section="A",
-        guardians=[admin.GuardianData(name="Rosa Torres", phone="+505 88881234")], family_id="FAM-0007",
+        settings,
+        "AA000001",
+        "student",
+        "Ana Torres",
+        grade=3,
+        section="A",
+        guardians=[admin.GuardianData(name="Rosa Torres", phone="+505 88881234")],
+        family_id="FAM-0007",
     )
     dialog = opened(gui.RegisterBadgeDialog(worker))
 
@@ -290,11 +301,13 @@ def test_a_walk_in_visitor_without_a_badge_is_recorded_by_name_alone(settings, w
         ("", None, "Carlos Ramírez", "visitor", "visit", "")
     ]
     assert _query(settings, "SELECT COUNT(*) FROM users") == [(0,)]
-    assert messages == [(
-        "information",
-        "Visita registrada exitosamente:\n\n• Visitante: Carlos Ramírez\n• Documento / ID: X1234567\n"
-        "• Sin tarjeta\n\nLa puerta ha sido abierta.",
-    )]
+    assert messages == [
+        (
+            "information",
+            "Visita registrada exitosamente:\n\n• Visitante: Carlos Ramírez\n• Documento / ID: X1234567\n"
+            "• Sin tarjeta\n\nLa puerta ha sido abierta.",
+        )
+    ]
 
 
 def test_a_walk_in_visitor_can_carry_a_temporary_badge_but_not_one_that_belongs_to_someone_else(

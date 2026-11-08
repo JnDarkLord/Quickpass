@@ -97,9 +97,7 @@ class ArduinoLink:
             return "SERIAL_PORT is not set in .env; running without the Arduino."
         self.close()
         try:
-            self._port = serial.Serial(
-                port_name, self._settings.serial_baudrate, timeout=READ_TIMEOUT_SECONDS
-            )
+            self._port = serial.Serial(port_name, self._settings.serial_baudrate, timeout=READ_TIMEOUT_SECONDS)
         except (serial.SerialException, OSError, ValueError) as error:
             self._port = None
             return f"Could not open {port_name}: {error}"

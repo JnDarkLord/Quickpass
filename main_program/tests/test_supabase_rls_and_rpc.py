@@ -228,9 +228,7 @@ def test_rls_policies_isolate_guardian_teacher_and_allow_admin(db_conn):
     assert role_val == "guardian"
     assert fam_val == "FAM-5001"
 
-    cur.execute(
-        "SELECT family_id FROM public.student_details WHERE family_id IN ('FAM-5001', 'FAM-8002')"
-    )
+    cur.execute("SELECT family_id FROM public.student_details WHERE family_id IN ('FAM-5001', 'FAM-8002')")
     g_families = {r[0] for r in cur.fetchall()}
     assert g_families == {"FAM-5001"}
 
@@ -252,9 +250,7 @@ def test_rls_policies_isolate_guardian_teacher_and_allow_admin(db_conn):
     assert t_role == "teacher"
     assert t_grade == 5
 
-    cur.execute(
-        "SELECT badge_uid FROM public.users WHERE badge_uid IN ('RLS_S1_5A', 'RLS_S2_5B', 'RLS_S3_8A')"
-    )
+    cur.execute("SELECT badge_uid FROM public.users WHERE badge_uid IN ('RLS_S1_5A', 'RLS_S2_5B', 'RLS_S3_8A')")
     t_students = {r[0] for r in cur.fetchall()}
     assert t_students == {"RLS_S1_5A", "RLS_S2_5B"}
 
@@ -374,9 +370,7 @@ def _store_school_settings(cur, **changes) -> None:
         **changes,
     }
     cur.execute("DELETE FROM public.school_settings")
-    cur.execute(
-        f"INSERT INTO public.school_settings ({SCHOOL_SETTINGS_COLUMNS}) VALUES ({', '.join(values.values())})"
-    )
+    cur.execute(f"INSERT INTO public.school_settings ({SCHOOL_SETTINGS_COLUMNS}) VALUES ({', '.join(values.values())})")
 
 
 def test_school_settings_hold_one_row_of_school_policy(db_conn):
@@ -472,8 +466,6 @@ def test_year_view_treats_a_missing_section_as_all_and_todas_as_a_section_name(d
     assert todas == []
 
 
-
-
 def test_grades_are_ranks_into_the_schools_own_list_with_no_fixed_last_grade(db_conn):
     cur = db_conn.cursor()
 
@@ -498,7 +490,10 @@ def test_grades_are_ranks_into_the_schools_own_list_with_no_fixed_last_grade(db_
     cur.execute("SELECT COUNT(*) FROM public.student_details WHERE grade = 13")
     assert cur.fetchone()[0] == 1
 
-    for badge_uid, role, sql in (("GRADE_0_STUDENT", "student", student_sql), ("GRADE_0_TEACHER", "teacher", teacher_sql)):
+    for badge_uid, role, sql in (
+        ("GRADE_0_STUDENT", "student", student_sql),
+        ("GRADE_0_TEACHER", "teacher", teacher_sql),
+    ):
         cur.execute("SAVEPOINT rank_zero")
         with pytest.raises(psycopg2.IntegrityError):
             register(badge_uid, role, sql, 0)

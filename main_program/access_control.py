@@ -82,7 +82,9 @@ def check_in_screen(lang: str, full_name: str, status: str) -> str:
 
 def check_out_screen(lang: str, full_name: str) -> str:
     first_name, _, _ = parse_name_parts(full_name)
-    line1 = _greeting(lang, "lcd.check_out.goodbye", first_name, too_long=i18n.t(lang, "lcd.check_out.goodbye_anonymous"))
+    line1 = _greeting(
+        lang, "lcd.check_out.goodbye", first_name, too_long=i18n.t(lang, "lcd.check_out.goodbye_anonymous")
+    )
     return arduino.command(arduino.GRANT, line1, i18n.t(lang, "lcd.check_out.done"))
 
 
@@ -127,11 +129,19 @@ def process_scan_line(
     if user is None:
         return _unregistered(conn, settings, lang, badge_uid, now, texts_allowed)
 
-    if user.get("graduation_date") or user.get("role") == "graduate" or (user.get("role") == "student" and not user.get("is_active")):
-        return ScanResult(is_scan=True, event_type="graduate_denied", user=user, reply_line=deny_screen(lang, "graduate"))
+    if (
+        user.get("graduation_date")
+        or user.get("role") == "graduate"
+        or (user.get("role") == "student" and not user.get("is_active"))
+    ):
+        return ScanResult(
+            is_scan=True, event_type="graduate_denied", user=user, reply_line=deny_screen(lang, "graduate")
+        )
 
     if not user.get("is_active"):
-        return ScanResult(is_scan=True, event_type="inactive_denied", user=user, reply_line=deny_screen(lang, "inactive"))
+        return ScanResult(
+            is_scan=True, event_type="inactive_denied", user=user, reply_line=deny_screen(lang, "inactive")
+        )
 
     cursor = conn.cursor()
     cursor.execute(

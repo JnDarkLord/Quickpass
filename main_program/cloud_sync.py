@@ -37,8 +37,7 @@ logger = logging.getLogger(__name__)
 class SyncTargetClient(Protocol):
     """SDK-style boundary interface for syncing attendance scans, users, and their Badges with Supabase."""
 
-    def upsert_attendance_records(self, records: list[dict[str, Any]]) -> None:
-        ...
+    def upsert_attendance_records(self, records: list[dict[str, Any]]) -> None: ...
 
 
 @dataclass(frozen=True)
@@ -168,11 +167,7 @@ class SupabaseSyncClient:
             "is_active": bool(user_bundle.get("is_active", True)),
             "created_at": user_bundle["created_at"],
         }
-        res = (
-            client.table("users")
-            .upsert(user_payload, on_conflict="badge_uid")
-            .execute()
-        )
+        res = client.table("users").upsert(user_payload, on_conflict="badge_uid").execute()
         rows = res.data or []
         if not rows:
             lookup = client.table("users").select("id").eq("badge_uid", user_bundle["badge_uid"]).execute()

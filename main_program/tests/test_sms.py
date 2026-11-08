@@ -65,9 +65,7 @@ def test_guardian_texts_follow_the_school_language(conn, settings, school):
     assert res_in.texts_to_send == [
         ("+1 8095559999", "Laura Diaz entered the school today 10/05/2026 at 07:05:00 AM (Late).")
     ]
-    assert res_out.texts_to_send == [
-        ("+1 8095559999", "Laura Diaz left the school today 10/05/2026 at 01:00:00 PM.")
-    ]
+    assert res_out.texts_to_send == [("+1 8095559999", "Laura Diaz left the school today 10/05/2026 at 01:00:00 PM.")]
 
 
 def test_admin_alert_follows_the_school_language(conn, settings, school):
@@ -179,8 +177,6 @@ def test_send_whatsapp_worker_formats_addresses(settings, monkeypatch):
     assert call_kwargs["data"]["To"] == "whatsapp:+50588880000"
     assert call_kwargs["data"]["From"] == "whatsapp:+14155238886"
     assert call_kwargs["data"]["Body"] == "Hola WhatsApp"
-
-
 
 
 def test_check_in_texts_to_two_guardians(conn, settings, now):
@@ -369,7 +365,6 @@ def test_texts_sent_in_demo_mode_when_twilio_enabled(conn, settings, now):
     assert "Demo Twilio Student" in res_out.texts_to_send[0][1]
 
 
-
 def test_send_sms_worker_error_reporting(settings, monkeypatch, capsys):
     from unittest.mock import MagicMock
 
@@ -434,5 +429,3 @@ def test_send_sms_alias_and_callbacks(settings, monkeypatch):
     assert len(success_events) == 1
     assert "WhatsApp sent to +505 88880000" in success_events[0]
     assert len(error_events) == 0
-
-

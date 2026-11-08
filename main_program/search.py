@@ -25,10 +25,10 @@ ALL = "ALL"
 
 @dataclass
 class PersonAttendanceDay:
-    date: str           # YYYY-MM-DD
-    arrival_time: str   # HH:MM:SS
-    departure_time: str # HH:MM:SS or ""
-    status: str         # "on_time", "late", or ""
+    date: str  # YYYY-MM-DD
+    arrival_time: str  # HH:MM:SS
+    departure_time: str  # HH:MM:SS or ""
+    status: str  # "on_time", "late", or ""
     grade: int | None
     section: str | None
 
@@ -562,7 +562,6 @@ def compute_other_role_range_matrix(
         rows.append(UserRangeRow(name=name, day_times=times))
 
     return rows
-
 
 
 def normalize_search_text(text: str) -> str:

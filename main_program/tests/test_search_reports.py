@@ -438,7 +438,9 @@ def test_no_absences_on_holidays_or_on_weekdays_the_school_is_closed(conn, setti
 
     assert [a.name for a in search_all_students_by_date(conn, "07/10/2026", school).absent] == ["Estudiante Uno"]
     assert search_all_students_by_date(conn, "07/10/2026", holiday).absent == []
-    assert [a.name for a in search_all_students_by_date(conn, "10/10/2026", open_saturdays).absent] == ["Estudiante Uno"]
+    assert [a.name for a in search_all_students_by_date(conn, "10/10/2026", open_saturdays).absent] == [
+        "Estudiante Uno"
+    ]
 
 
 def test_ranges_count_the_school_days_between_the_first_and_last_scans_on_record(conn, school):
@@ -456,9 +458,13 @@ def test_ranges_count_the_school_days_between_the_first_and_last_scans_on_record
             )
 
     assert school_days_on_record(conn, school, *october) == [date(2026, 10, 6), date(2026, 10, 7), date(2026, 10, 8)]
-    assert school_days_on_record(conn, school, date(2026, 10, 7), date(2026, 10, 31)) == [date(2026, 10, 7), date(2026, 10, 8)]
+    assert school_days_on_record(conn, school, date(2026, 10, 7), date(2026, 10, 31)) == [
+        date(2026, 10, 7),
+        date(2026, 10, 8),
+    ]
     assert school_days_on_record(conn, replace(school, holidays=(date(2026, 10, 7),)), *october) == [
-        date(2026, 10, 6), date(2026, 10, 8),
+        date(2026, 10, 6),
+        date(2026, 10, 8),
     ]
 
 
@@ -1035,8 +1041,14 @@ def test_english_reports_use_english_headers_dates_times_and_marks(conn, setting
     assert workbook.active.title == "Report"
     rows_e4 = list(workbook.active.iter_rows(values_only=True))
     assert rows_e4[0] == (
-        "Full name", "Grade & Section", "Times present", "Times late", "Times absent",
-        "10/05/2026", "10/06/2026", "10/07/2026",
+        "Full name",
+        "Grade & Section",
+        "Times present",
+        "Times late",
+        "Times absent",
+        "10/05/2026",
+        "10/06/2026",
+        "10/07/2026",
     )
     assert rows_e4[1] == ("Ana Morales", "7° A", 1, 1, 1, "P", "L", "A")
 
@@ -1044,7 +1056,9 @@ def test_english_reports_use_english_headers_dates_times_and_marks(conn, setting
 
 
 def test_reports_name_grades_the_way_the_school_does(conn, settings, school, tmp_path):
-    school = store_school(conn, replace(school, school_language="en", grades=("Kinder", "Year 1", "Year 2"), sections=("Red", "Blue")))
+    school = store_school(
+        conn, replace(school, school_language="en", grades=("Kinder", "Year 1", "Year 2"), sections=("Red", "Blue"))
+    )
     registered = datetime(2026, 10, 1, 7, 0, 0)
     s = add_user(conn, settings, "AA01", "est", "Lucy White", grade=2, section="Blue", now=registered)
     t = add_user(conn, settings, "BB01", "prof", "Tom Green", taught_grade=3, now=registered)
@@ -1057,7 +1071,9 @@ def test_reports_name_grades_the_way_the_school_does(conn, settings, school, tmp
                 (user["badge_uid"], user["id"], user["full_name"], role, grade, section),
             )
 
-    e3 = export_e3(tmp_path, school, date(2026, 10, 5), 2, "Blue", search_all_students_by_date(conn, "2026-10-05", school).present)
+    e3 = export_e3(
+        tmp_path, school, date(2026, 10, 5), 2, "Blue", search_all_students_by_date(conn, "2026-10-05", school).present
+    )
     assert e3.path.name == "By grade, 10-05-2026, Year 1 Blue.xlsx"
     rows_e3 = list(openpyxl.load_workbook(e3.path).active.iter_rows(values_only=True))
     assert rows_e3[1] == ("06:40:00 AM", None, "Lucy White", "Year 1 Blue", "On Time")
@@ -1068,6 +1084,17 @@ def test_reports_name_grades_the_way_the_school_does(conn, settings, school, tmp
     assert rows_e1[1][4] == "Year 2"
 
     weekdays = [datetime(2026, 10, 5)]
-    e5 = export_e5(tmp_path, school, date(2026, 10, 5), date(2026, 10, 5), 2, weekdays, compute_student_range_matrix(conn, weekdays, grade=2))
+    e5 = export_e5(
+        tmp_path,
+        school,
+        date(2026, 10, 5),
+        date(2026, 10, 5),
+        2,
+        weekdays,
+        compute_student_range_matrix(conn, weekdays, grade=2),
+    )
     assert e5.path.name == "Year 1 from 10-05-2026 to 10-05-2026.xlsx"
-    assert export_e5(tmp_path, school, date(2026, 10, 5), date(2026, 10, 5), 1, weekdays, []).error == "No students found in Kinder."
+    assert (
+        export_e5(tmp_path, school, date(2026, 10, 5), date(2026, 10, 5), 1, weekdays, []).error
+        == "No students found in Kinder."
+    )

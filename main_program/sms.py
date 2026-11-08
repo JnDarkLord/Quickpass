@@ -191,4 +191,3 @@ def send_sms_async(
 
 # Alias for backward compatibility
 send_sms = send_sms_async
-

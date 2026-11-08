@@ -203,14 +203,19 @@ def test_student_square_scan_banners(qapp):
 def test_badge_management_view_displays_graduates(qapp, settings):
     import admin
     import database
+
     conn = database.connect(settings.database_path)
     admin.add_user(conn, settings, badge_uid="EE112233", role="student", full_name="Alumno Once", grade=11, section="A")
-    admin.add_user(conn, settings, badge_uid="EE445566", role="student", full_name="Graduado Test", grade=11, section="B")
+    admin.add_user(
+        conn, settings, badge_uid="EE445566", role="student", full_name="Graduado Test", grade=11, section="B"
+    )
 
     # Graduate one student
     with conn:
         conn.execute("UPDATE users SET role = 'graduate', is_active = 0 WHERE badge_uid = 'EE445566'")
-        conn.execute("UPDATE student_details SET graduation_date = '2026-06-30' WHERE user_id = (SELECT id FROM users WHERE badge_uid = 'EE445566')")
+        conn.execute(
+            "UPDATE student_details SET graduation_date = '2026-06-30' WHERE user_id = (SELECT id FROM users WHERE badge_uid = 'EE445566')"
+        )
     conn.close()
 
     worker = HardwareWorker(settings)
@@ -241,7 +246,9 @@ def test_live_access_table_status_text(qapp, settings):
         win.on_scan_event({"event_type": "check_out", "full_name": "Estudiante Dos", "is_registered": True})
         assert win.feed_table.item(0, 4).text() == "Salida"
 
-        win.on_scan_event({"event_type": "check_in", "status": "on_time", "full_name": "Estudiante Tres", "is_registered": True})
+        win.on_scan_event(
+            {"event_type": "check_in", "status": "on_time", "full_name": "Estudiante Tres", "is_registered": True}
+        )
         assert win.feed_table.item(0, 4).text() == "Puntual"
     finally:
         win.close()
@@ -278,6 +285,7 @@ def test_teacher_registration_and_display_has_no_section(qapp, settings):
         # Add teacher to database and verify BadgeManagementView displays '--' for section
         import admin
         import database
+
         conn = database.connect(settings.database_path)
         admin.add_user(
             conn,
@@ -316,8 +324,12 @@ def test_all_sections_choice_searches_every_section_whatever_its_label(qapp, set
     import database
 
     conn = database.connect(settings.database_path)
-    admin.add_user(conn, settings, badge_uid="AA000001", role="student", full_name="Ana Seccion A", grade=3, section="A")
-    admin.add_user(conn, settings, badge_uid="BB000002", role="student", full_name="Beto Seccion B", grade=3, section="B")
+    admin.add_user(
+        conn, settings, badge_uid="AA000001", role="student", full_name="Ana Seccion A", grade=3, section="A"
+    )
+    admin.add_user(
+        conn, settings, badge_uid="BB000002", role="student", full_name="Beto Seccion B", grade=3, section="B"
+    )
     scan_time = datetime(2026, 10, 5, 6, 30, 0)
     access_control.process_scan_line(conn, settings, "SCAN AA000001", now=scan_time)
     access_control.process_scan_line(conn, settings, "SCAN BB000002", now=scan_time)
@@ -368,10 +380,17 @@ def test_english_school_sees_english_banners_feed_and_12_hour_times(qapp, settin
     worker = HardwareWorker(settings)
     win = LiveAccessWindow(worker)
     try:
-        win.on_scan_event({
-            "is_registered": True, "event_type": "check_in", "status": "late", "role": "student",
-            "full_name": "Ana Morales", "time_str": "14:05:09", "date_str": "2026-10-05",
-        })
+        win.on_scan_event(
+            {
+                "is_registered": True,
+                "event_type": "check_in",
+                "status": "late",
+                "role": "student",
+                "full_name": "Ana Morales",
+                "time_str": "14:05:09",
+                "date_str": "2026-10-05",
+            }
+        )
         assert win.student_square.status_banner.text() == "LATE CHECK-IN"
         assert win.student_square.lbl_time.text() == "Recorded: 02:05:09 PM (10/05/2026)"
         assert [win.feed_table.item(0, c).text() for c in (0, 2, 4)] == ["02:05:09 PM", "Student", "Late"]
@@ -542,8 +561,6 @@ def test_visitor_sign_in_opens_the_gate_showing_their_name_and_id(qapp, settings
         QApplication.processEvents()
 
 
-
-
 def test_registration_offers_the_schools_grades_and_sections(qapp, settings, kinder_school, monkeypatch):
     monkeypatch.setattr(gui.QMessageBox, "information", lambda *args, **kwargs: None)
     worker = HardwareWorker(settings)
@@ -571,6 +588,7 @@ def test_registration_offers_the_schools_grades_and_sections(qapp, settings, kin
 
 def test_editing_keeps_a_grade_the_school_no_longer_lists(qapp, settings, kinder_school):
     import admin
+
     conn = database.connect(settings.database_path)
     store_school(conn, make_school())
     admin.add_user(conn, settings, "AB12CD34", "student", "Lucía Once", grade=11, section="D")
@@ -593,6 +611,7 @@ def test_editing_keeps_a_grade_the_school_no_longer_lists(qapp, settings, kinder
 
 def test_grade_names_show_everywhere_and_follow_a_rename(qapp, settings, kinder_school, monkeypatch):
     import admin
+
     monkeypatch.setattr(HardwareWorker, "start", lambda self: None)
     conn = database.connect(settings.database_path)
     admin.add_user(conn, settings, "AA000001", "student", "Ana Kinder", grade=2, section="Única")
@@ -601,6 +620,7 @@ def test_grade_names_show_everywhere_and_follow_a_rename(qapp, settings, kinder_
 
     window = MainWindow(settings)
     try:
+
         def grade_cells():
             table = window.view_badges.table
             return {table.item(r, 0).text(): table.item(r, 4).text() for r in range(table.rowCount())}
@@ -624,6 +644,7 @@ def test_grade_names_show_everywhere_and_follow_a_rename(qapp, settings, kinder_
 
 def test_a_badge_read_again_counts_once_until_5_seconds_have_passed_or_the_rfid_mode_changes(qapp, settings):
     import admin
+
     conn = database.connect(settings.database_path)
     admin.add_user(conn, settings, "AA000001", "student", "Ana Torres", grade=3, section="A")
     conn.close()

@@ -143,7 +143,9 @@ def test_renaming_a_section_moves_its_students_to_the_new_name_for_cloud_sync_to
     with conn:
         conn.execute("UPDATE users SET is_synced = 1")
 
-    school_settings.save(conn, replace(school, sections=("Azul", "B", "C", "D")), now=now, renamed_sections={"A": "Azul"})
+    school_settings.save(
+        conn, replace(school, sections=("Azul", "B", "C", "D")), now=now, renamed_sections={"A": "Azul"}
+    )
 
     assert school_settings.load(conn).sections == ("Azul", "B", "C", "D")
     assert _sections_and_sync_flags(conn) == {"Ana": ("Azul", 0), "Beto": ("B", 1)}
@@ -198,12 +200,18 @@ def test_school_days_are_the_active_weekdays_that_are_not_holidays():
     monday_to_sunday = (date(2026, 10, 12), date(2026, 10, 18))
 
     assert school.school_days(*monday_to_sunday) == [
-        date(2026, 10, 12), date(2026, 10, 13), date(2026, 10, 15), date(2026, 10, 16),
+        date(2026, 10, 12),
+        date(2026, 10, 13),
+        date(2026, 10, 15),
+        date(2026, 10, 16),
     ]
     assert replace(school, active_weekdays=(0, 1, 2, 3, 4, 5)).school_days(*monday_to_sunday)[-1] == date(2026, 10, 17)
     assert date(2026, 10, 14) in replace(school, holidays=()).school_days(*monday_to_sunday)
     assert school.school_days(date(2026, 10, 29), date(2026, 11, 3)) == [
-        date(2026, 10, 29), date(2026, 10, 30), date(2026, 11, 2), date(2026, 11, 3),
+        date(2026, 10, 29),
+        date(2026, 10, 30),
+        date(2026, 11, 2),
+        date(2026, 11, 3),
     ]
     assert school.school_days(date(2026, 10, 16), date(2026, 10, 12)) == []
 

@@ -167,6 +167,7 @@ def test_cooldown_gap_and_check_out(conn, settings):
 
     # 1. 299 seconds later -> repeat scan (just before gap)
     from datetime import timedelta
+
     t_before_gap = t_in + timedelta(seconds=299)
     res_gap = process_scan_line(conn, settings, "SCAN AA11", now=t_before_gap)
     assert res_gap.event_type == "repeat_scan"
@@ -193,6 +194,7 @@ def test_cooldown_gap_and_check_out(conn, settings):
 def test_demo_mode_alternating_scans(conn, settings):
     from dataclasses import replace
     from datetime import timedelta
+
     demo_settings = replace(settings, demo_mode=True)
 
     add_user(conn, demo_settings, "DD44", "est", "Carlos Santana", grade=10, section="A")
@@ -218,7 +220,6 @@ def test_demo_mode_alternating_scans(conn, settings):
     # Scan 4: Check-out again immediately
     res4 = process_scan_line(conn, demo_settings, "SCAN DD44", now=late_time + timedelta(seconds=5))
     assert res4.event_type == "check_out"
-
 
 
 SCREENS_BY_LANGUAGE = {
@@ -308,9 +309,19 @@ def test_a_walk_in_visitor_with_a_temporary_badge_checks_in_and_the_gate_shows_t
     assert (result.event_type, result.status, result.texts_to_send) == ("check_in", "visit", [])
     assert gate_screen(result.reply_line) == ("GRANT", "Visita: Carlos", "ID: A1234567")
     assert tuple(conn.execute(VISIT_ROW).fetchone()) == (
-        "check_in", "visit", "7E571701", visitor["id"], "Carlos Ramírez", "visitor", None, "",
+        "check_in",
+        "visit",
+        "7E571701",
+        visitor["id"],
+        "Carlos Ramírez",
+        "visitor",
+        None,
+        "",
     )
-    assert (leaving.event_type, gate_screen(leaving.reply_line)) == ("check_out", ("GRANT", "Salida: Carlos", "ID: 7E571701"))
+    assert (leaving.event_type, gate_screen(leaving.reply_line)) == (
+        "check_out",
+        ("GRANT", "Salida: Carlos", "ID: 7E571701"),
+    )
 
 
 def test_a_walk_in_visitor_without_a_badge_is_recorded_under_their_name_alone(conn, settings, now):
@@ -318,7 +329,16 @@ def test_a_walk_in_visitor_without_a_badge_is_recorded_under_their_name_alone(co
 
     assert (result.event_type, result.status) == ("check_in", "visit")
     assert gate_screen(result.reply_line) == ("GRANT", "Visita: Carlos", "ID: A1234567")
-    assert tuple(conn.execute(VISIT_ROW).fetchone()) == ("check_in", "visit", "", None, "Carlos Ramírez", "visitor", None, "")
+    assert tuple(conn.execute(VISIT_ROW).fetchone()) == (
+        "check_in",
+        "visit",
+        "",
+        None,
+        "Carlos Ramírez",
+        "visitor",
+        None,
+        "",
+    )
     assert conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
 
 

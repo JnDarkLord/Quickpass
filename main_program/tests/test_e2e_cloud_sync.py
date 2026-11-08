@@ -21,9 +21,7 @@ import database
 
 _DOTENV = dotenv_values(config.REPO_ROOT / ".env")
 SUPABASE_URL = os.environ.get("SUPABASE_URL", _DOTENV.get("SUPABASE_URL") or "")
-SUPABASE_SERVICE_ROLE_KEY = os.environ.get(
-    "SUPABASE_SERVICE_ROLE_KEY", _DOTENV.get("SUPABASE_SERVICE_ROLE_KEY") or ""
-)
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", _DOTENV.get("SUPABASE_SERVICE_ROLE_KEY") or "")
 
 pytestmark = pytest.mark.skipif(
     not (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY),
@@ -39,8 +37,12 @@ def supabase_e2e_seed(supabase_schema):
     cur = conn.cursor()
 
     # Cleanup any prior E2E records
-    cur.execute("DELETE FROM public.attendance_records WHERE badge_uid IN ('E2E10001', 'E2E20002', 'E2EC1', 'TEST_KEY')")
-    cur.execute("DELETE FROM public.guardians WHERE email IN ('e2e.sync.guardian@school.edu', 'e2e.other.guardian@school.edu')")
+    cur.execute(
+        "DELETE FROM public.attendance_records WHERE badge_uid IN ('E2E10001', 'E2E20002', 'E2EC1', 'TEST_KEY')"
+    )
+    cur.execute(
+        "DELETE FROM public.guardians WHERE email IN ('e2e.sync.guardian@school.edu', 'e2e.other.guardian@school.edu')"
+    )
     cur.execute("DELETE FROM public.student_details WHERE family_id IN ('FAM-7100', 'FAM-8200')")
     cur.execute("DELETE FROM public.users WHERE badge_uid IN ('E2E10001', 'E2E20002', 'E2E70007', 'E2EA0001')")
 
@@ -113,8 +115,12 @@ def supabase_e2e_seed(supabase_schema):
     conn = psycopg2.connect(postgres_url())
     conn.autocommit = True
     cur = conn.cursor()
-    cur.execute("DELETE FROM public.attendance_records WHERE badge_uid IN ('E2E10001', 'E2E20002', 'E2EC1', 'TEST_KEY')")
-    cur.execute("DELETE FROM public.guardians WHERE email IN ('e2e.sync.guardian@school.edu', 'e2e.other.guardian@school.edu')")
+    cur.execute(
+        "DELETE FROM public.attendance_records WHERE badge_uid IN ('E2E10001', 'E2E20002', 'E2EC1', 'TEST_KEY')"
+    )
+    cur.execute(
+        "DELETE FROM public.guardians WHERE email IN ('e2e.sync.guardian@school.edu', 'e2e.other.guardian@school.edu')"
+    )
     cur.execute("DELETE FROM public.student_details WHERE family_id IN ('FAM-7100', 'FAM-8200')")
     cur.execute("DELETE FROM public.users WHERE badge_uid IN ('E2E10001', 'E2E20002', 'E2E70007', 'E2EA0001')")
     cur.close()

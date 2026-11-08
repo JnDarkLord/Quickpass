@@ -32,9 +32,14 @@ def test_get_next_family_id(tmp_path):
         assert database.get_next_family_id(conn) == "FAM-0001"
 
         # Insert a user and student detail with FAM-0042
-        conn.execute("INSERT INTO users (badge_uid, full_name, role, created_at) VALUES ('A1', 'Student 1', 'student', '2026-10-09T10:00:00')")
+        conn.execute(
+            "INSERT INTO users (badge_uid, full_name, role, created_at) VALUES ('A1', 'Student 1', 'student', '2026-10-09T10:00:00')"
+        )
         user_id = conn.execute("SELECT id FROM users WHERE badge_uid = 'A1'").fetchone()[0]
-        conn.execute("INSERT INTO student_details (user_id, grade, section, family_id) VALUES (?, 10, 'A', 'FAM-0042')", (user_id,))
+        conn.execute(
+            "INSERT INTO student_details (user_id, grade, section, family_id) VALUES (?, 10, 'A', 'FAM-0042')",
+            (user_id,),
+        )
         conn.commit()
 
         assert database.get_next_family_id(conn) == "FAM-0043"
@@ -45,10 +50,18 @@ def test_get_next_family_id(tmp_path):
 def test_find_family_by_guardian_phone(tmp_path):
     conn = database.connect(tmp_path / "test.db")
     try:
-        conn.execute("INSERT INTO users (badge_uid, full_name, role, created_at) VALUES ('B1', 'Hno Mayor', 'student', '2026-10-09T10:00:00')")
+        conn.execute(
+            "INSERT INTO users (badge_uid, full_name, role, created_at) VALUES ('B1', 'Hno Mayor', 'student', '2026-10-09T10:00:00')"
+        )
         user_id = conn.execute("SELECT id FROM users WHERE badge_uid = 'B1'").fetchone()[0]
-        conn.execute("INSERT INTO student_details (user_id, grade, section, family_id) VALUES (?, 11, 'B', 'FAM-0142')", (user_id,))
-        conn.execute("INSERT INTO guardians (student_id, position, name, phone, email) VALUES (?, 1, 'Maria Perez', '+505 8888 1234', 'maria@example.com')", (user_id,))
+        conn.execute(
+            "INSERT INTO student_details (user_id, grade, section, family_id) VALUES (?, 11, 'B', 'FAM-0142')",
+            (user_id,),
+        )
+        conn.execute(
+            "INSERT INTO guardians (student_id, position, name, phone, email) VALUES (?, 1, 'Maria Perez', '+505 8888 1234', 'maria@example.com')",
+            (user_id,),
+        )
         conn.commit()
 
         match = database.find_family_by_guardian_phone(conn, "+505 8888 1234")

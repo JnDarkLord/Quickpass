@@ -47,7 +47,9 @@ def main() -> int:
         print("  ℹ️ NOTE: With DEMO_MODE=TRUE, the program sends no SMS during scans.")
         print("     This tool sends the message directly to check your Twilio account.")
 
-    print(f"TWILIO_ACCOUNT_SID : {settings.twilio_account_sid[:6]}...{settings.twilio_account_sid[-4:] if len(settings.twilio_account_sid) > 10 else settings.twilio_account_sid}")
+    print(
+        f"TWILIO_ACCOUNT_SID : {settings.twilio_account_sid[:6]}...{settings.twilio_account_sid[-4:] if len(settings.twilio_account_sid) > 10 else settings.twilio_account_sid}"
+    )
     print(f"TWILIO_FROM_NUMBER : {settings.twilio_from_number}")
     print(f"ADMIN_ALERT_PHONE  : {settings.admin_alert_phone}")
 
@@ -70,7 +72,9 @@ def main() -> int:
         print("   To send real messages, set TWILIO_ENABLED=TRUE in .env.")
 
     if not (settings.twilio_account_sid and settings.twilio_auth_token and settings.twilio_from_number):
-        print("\n❌ Error: Twilio credentials are missing from .env (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN or TWILIO_FROM_NUMBER).")
+        print(
+            "\n❌ Error: Twilio credentials are missing from .env (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN or TWILIO_FROM_NUMBER)."
+        )
         return 1
 
     print("\nSending the message to Twilio...")

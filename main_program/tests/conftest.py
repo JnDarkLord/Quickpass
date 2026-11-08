@@ -62,7 +62,7 @@ def postgres_url() -> str:
     url = url or "postgresql://localhost:5432/quickpass"
     for prefix in ("postgresql+psycopg2://", "postgres://"):
         if url.startswith(prefix):
-            return "postgresql://" + url[len(prefix):]
+            return "postgresql://" + url[len(prefix) :]
     return url
 
 
@@ -154,9 +154,7 @@ def messages(monkeypatch):
 
     shown = []
     for kind in ("information", "warning", "critical"):
-        monkeypatch.setattr(
-            gui.QMessageBox, kind, lambda *args, _kind=kind, **kwargs: shown.append((_kind, args[2]))
-        )
+        monkeypatch.setattr(gui.QMessageBox, kind, lambda *args, _kind=kind, **kwargs: shown.append((_kind, args[2])))
     monkeypatch.setattr(gui.QMessageBox, "exec", lambda box: shown.append(("box", box.text())) or 0)
     return shown
 
