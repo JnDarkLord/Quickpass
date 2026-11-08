@@ -21,7 +21,7 @@ import {
   Download,
   Printer,
 } from "lucide-react"
-import * as XLSX from "xlsx"
+import { exportRows } from "@/lib/spreadsheet"
 
 const MARK_KEYS = { P: "mark.present", T: "mark.late", A: "mark.absent" } as const satisfies Record<string, MessageKey>
 
@@ -82,7 +82,7 @@ export function TeacherPortal() {
     setLoading(false)
   }
 
-  const handleExportMatrix = () => {
+  const handleExportMatrix = async () => {
     if (!yearData?.students || yearData.students.length === 0) {
       alert(t("teacher.year.export_empty"))
       return
@@ -98,10 +98,11 @@ export function TeacherPortal() {
       [t("export.punctuality_percent")]: st.punctuality_rate,
     }))
 
-    const ws = XLSX.utils.json_to_sheet(data)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, t("teacher.year.export_sheet"))
-    XLSX.writeFile(wb, safeFileName(`${t("teacher.year.export_file", { grade: gradeLabel(taughtGrade) })}.xlsx`))
+    await exportRows(data, {
+      sheetName: t("teacher.year.export_sheet"),
+      fileName: safeFileName(`${t("teacher.year.export_file", { grade: gradeLabel(taughtGrade) })}.xlsx`),
+      format: "xlsx",
+    })
   }
 
   useEffect(() => {

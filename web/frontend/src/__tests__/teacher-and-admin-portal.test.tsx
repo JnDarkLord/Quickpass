@@ -1,19 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import * as XLSX from "xlsx"
+import { exportRows } from "@/lib/spreadsheet"
 import { App } from "@/App"
 import { setPortalBackend, resetPortalBackend } from "@/lib/supabase"
 import type { UserProfile } from "@/context/AuthContext"
 import { mockBackend } from "./support"
 
-vi.mock("xlsx", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("xlsx")>()
-  return {
-    ...actual,
-    writeFile: vi.fn(),
-  }
-})
+vi.mock("@/lib/spreadsheet", () => ({ exportRows: vi.fn() }))
 
 const teacherProfile: UserProfile = {
   id: 20,
@@ -146,9 +140,9 @@ describe("Teacher Portal and Admin Portal", () => {
     })
 
     await user.click(screen.getByRole("button", { name: /Exportar Matriz \(\.xlsx\)/i }))
-    expect(XLSX.writeFile).toHaveBeenCalledWith(
+    expect(exportRows).toHaveBeenCalledWith(
       expect.anything(),
-      "Matriz_Asistencia_5°.xlsx"
+      expect.objectContaining({ fileName: "Matriz_Asistencia_5°.xlsx", format: "xlsx" })
     )
   })
 
@@ -254,17 +248,15 @@ describe("Teacher Portal and Admin Portal", () => {
 
     // Export CSV and XLSX in Day View
     await user.click(screen.getByRole("button", { name: /Excel \(\.xlsx\)/i }))
-    expect(XLSX.writeFile).toHaveBeenCalledWith(
+    expect(exportRows).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringMatching(/\.xlsx$/),
-      { bookType: "xlsx" }
+      expect.objectContaining({ fileName: expect.stringMatching(/\.xlsx$/), format: "xlsx" })
     )
 
     await user.click(screen.getByRole("button", { name: /^CSV$/i }))
-    expect(XLSX.writeFile).toHaveBeenCalledWith(
+    expect(exportRows).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringMatching(/\.csv$/),
-      { bookType: "csv" }
+      expect.objectContaining({ fileName: expect.stringMatching(/\.csv$/), format: "csv" })
     )
 
     // Switch to Year View and verify consolidated matrix includes Ausencias and Código Familiar columns

@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import * as XLSX from "xlsx"
+import { exportRows, type SpreadsheetFormat, type SpreadsheetRow } from "@/lib/spreadsheet"
 import {
   Calendar,
   Clock,
@@ -102,14 +102,14 @@ export function AdminPortal() {
 
   const statusText = (status: string) => (isDayStatus(status) ? t(STATUS_LABELS[status]) : status)
 
-  const handleExport = (format: "xlsx" | "csv" = "xlsx") => {
+  const handleExport = async (format: SpreadsheetFormat = "xlsx") => {
     const studentsToExport = activeView === "day" ? dayData?.students : yearData?.students
     if (!studentsToExport || studentsToExport.length === 0) {
       alert(t("admin.export_empty"))
       return
     }
 
-    let worksheetData: any[] = []
+    let worksheetData: SpreadsheetRow[] = []
 
     if (activeView === "day") {
       worksheetData = studentsToExport.map((s: any) => ({
@@ -137,16 +137,16 @@ export function AdminPortal() {
       }))
     }
 
-    const ws = XLSX.utils.json_to_sheet(worksheetData)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, activeView === "day" ? t("admin.day.export_sheet") : t("admin.year.export_sheet"))
-
     const name = activeView === "day"
       ? t("admin.day.export_file", { date: formatDate(dayData?.date ?? selectedDate) })
       : t("admin.year.export_file", { start: formatDate(startDate), end: formatDate(endDate) })
     const filename = safeFileName(`${name}.${format}`)
 
-    XLSX.writeFile(wb, filename, { bookType: format })
+    await exportRows(worksheetData, {
+      sheetName: activeView === "day" ? t("admin.day.export_sheet") : t("admin.year.export_sheet"),
+      fileName: filename,
+      format,
+    })
   }
 
   return (
