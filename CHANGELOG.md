@@ -4,6 +4,17 @@ All notable changes to Quickpass are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- **Web portal exports:** replaced the npm `xlsx` package (SheetJS 0.18.5, with unpatched high-severity advisories) with `write-excel-file`. CSV exports now carry a UTF-8 byte order mark and guard against formula injection.
+
+### Added
+
+- **Continuous integration:** GitHub Actions runs Ruff, the Python tests (3.10 and 3.14, with PostgreSQL 16), the web portal's tests, lint, build, and audit, the firmware tests, and an Arduino Uno compile.
+- **Repository tooling:** Ruff lint and formatting (`pyproject.toml`, `make lint`, `make format`), `requirements-dev.txt`, Dependabot, CODEOWNERS, `.editorconfig`, `.python-version`, and `web/frontend/.nvmrc`.
+
 ## [1.0.0] - 2026-11-06
 
 ### Added
@@ -16,3 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Web portal & database security (`supabase/migrations/`, `web/frontend/`):** Serverless React + Vite + Tailwind CSS portal on Supabase Auth and PostgreSQL Row-Level Security, with Authorized Email enforcement and Day/Year Views scoped to Guardians (Family Code), Teachers (Grade), and Admins (whole School, including Excel export and Role preview).
 - **Spanish and English parity (`locales/`):** Full runtime switching between Spanish and English across the desktop window, 16x2 LCD screens, Excel reports, text messages, and web portal using language-neutral database codes.
 - **Documentation & test suites (`docs/`, `main_program/tests/`, `web/frontend/src/__tests__/`):** Hardware, desktop setup, web portal setup, school administration, architecture, and testing guides with dual-theme SVG diagrams, backed by Python (`pytest`), frontend (`Vitest`), and C++17 firmware test suites.
+
+[Unreleased]: https://github.com/JnDarkLord/Quickpass/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/JnDarkLord/Quickpass/releases/tag/v1.0.0

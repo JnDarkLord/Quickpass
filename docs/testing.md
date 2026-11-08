@@ -12,9 +12,22 @@ On macOS or Linux, the root `Makefile` wraps these commands safely: `make test-d
 
 ![Quickpass Automated Test Suites](images/test-suites-tree.svg)
 
+## Continuous integration
+
+[GitHub Actions](../.github/workflows/ci.yml) runs on every pull request and every push to `main`:
+
+| Job | What it runs |
+|:---|:---|
+| Python lint | `ruff check` and `ruff format --check` |
+| Python tests | `python -m pytest` on Python 3.10 and 3.14, against a PostgreSQL 16 service with the stand-ins below |
+| Web portal | `npm test`, `npm run lint`, `npm run build` (which type-checks), and `npm audit` of the runtime dependencies |
+| Firmware | The C++17 tests, and `arduino-cli compile` of the sketch for the Arduino Uno |
+
+The Cloud Sync end-to-end test skips there, because CI has no Supabase project.
+
 ## Python
 
-Activate the Python environment ([Desktop Setup](desktop-setup.md)), then run, from the repository root:
+Activate the Python environment ([Desktop Setup](desktop-setup.md)) and install the test tools once with `pip install -r requirements-dev.txt` (`make setup` does both). Then run, from the repository root:
 
 ```bash
 export QT_QPA_PLATFORM=offscreen
