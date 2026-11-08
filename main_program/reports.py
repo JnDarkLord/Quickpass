@@ -111,7 +111,12 @@ def export_e1(
     """Export one person's attendance history (E1)."""
     texts = _Texts(school)
     role = person_result.user["role"]
-    headers = [texts("header.check_in_date"), texts("header.check_in_time"), texts("header.check_out_time"), texts("header.role")]
+    headers = [
+        texts("header.check_in_date"),
+        texts("header.check_in_time"),
+        texts("header.check_out_time"),
+        texts("header.role"),
+    ]
     if role == "student":
         headers.append(texts("header.grade_section"))
     elif role == "teacher":
@@ -120,7 +125,12 @@ def export_e1(
 
     rows = []
     for day in person_result.history:
-        row: list[Any] = [texts.date(day.date), texts.time(day.arrival_time), texts.time(day.departure_time), texts.role(role)]
+        row: list[Any] = [
+            texts.date(day.date),
+            texts.time(day.arrival_time),
+            texts.time(day.departure_time),
+            texts.role(role),
+        ]
         if role == "student":
             row.append(texts.grade_section(day.grade, day.section))
         elif role == "teacher":

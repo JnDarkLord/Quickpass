@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from config import ConfigError, Settings, load_settings, REPO_ROOT
+from config import REPO_ROOT, ConfigError, Settings, load_settings
 
 
 def write_env(tmp_path: Path, text: str) -> Path:

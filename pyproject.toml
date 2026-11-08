@@ -1,0 +1,39 @@
+# Tool settings for the desktop program, its tools, and its tests.
+# Dependencies live in requirements.txt (runtime) and requirements-dev.txt (tests and lint).
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+extend-exclude = ["web"]
+
+[tool.ruff.lint]
+select = [
+    "E4", "E7", "E9", # pycodestyle errors (line length is left to the formatter)
+    "F",              # Pyflakes
+    "W",              # pycodestyle warnings
+    "I",              # isort
+    "B",              # flake8-bugbear
+    "UP",             # pyupgrade
+    "SIM",            # flake8-simplify
+    "C4",             # flake8-comprehensions
+]
+ignore = [
+    "SIM102", # nested ifs often read better as an elif's body
+    "SIM105", # an explicit try/except/pass is clear enough
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests and tools put main_program/ on sys.path before importing from it.
+"main_program/tests/**" = ["E402"]
+"main_program/tools/**" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "access_control", "admin", "arduino", "cloud_sync", "config", "database", "gui", "i18n",
+    "main", "reports", "school_settings", "search", "sms", "tools",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["main_program/tests"]
+pythonpath = ["main_program", "."]
+norecursedirs = [".venv", ".scratch", "node_modules"]

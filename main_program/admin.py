@@ -7,7 +7,7 @@ the inputs and the time; they never read the keyboard, print or touch serial.
 from __future__ import annotations
 
 import sqlite3
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
@@ -17,7 +17,6 @@ import i18n
 import school_settings
 import sms
 from config import Settings
-
 
 ROLE_MAP = {
     "est": "student",
@@ -91,7 +90,6 @@ class WipeResult:
     success: bool
     backup_path: Path | None = None
     error: str = ""
-
 
 
 def _error(conn: sqlite3.Connection, key: str, **params: Any) -> str:
@@ -210,9 +208,7 @@ def add_user(
     elif norm_role == "teacher":
         clean_taught_grade = _grade_rank(taught_grade, school)
         if clean_taught_grade is None:
-            return AddUserResult(
-                success=False, error=_error(conn, "taught_grade_range")
-            )
+            return AddUserResult(success=False, error=_error(conn, "taught_grade_range"))
 
     elif norm_role == "admin":
         cursor = conn.cursor()
@@ -220,14 +216,10 @@ def add_user(
         admin_count = cursor.fetchone()[0]
         if admin_count > 0:
             if not approving_uid:
-                return AddUserResult(
-                    success=False, error=_error(conn, "not_admin")
-                )
+                return AddUserResult(success=False, error=_error(conn, "not_admin"))
             approver = database.get_user_by_badge_uid(conn, approving_uid)
             if not approver or approver["role"] != "admin" or not approver["is_active"]:
-                return AddUserResult(
-                    success=False, error=_error(conn, "not_admin")
-                )
+                return AddUserResult(success=False, error=_error(conn, "not_admin"))
 
     timestamp = (now or datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -331,9 +323,7 @@ def delete_user(
             error=_error(conn, "same_badge"),
         )
     if not (approved_by_badge or approved_by_key):
-        return DeleteUserResult(
-            success=False, error=_error(conn, "not_admin")
-        )
+        return DeleteUserResult(success=False, error=_error(conn, "not_admin"))
 
     if not confirmed:
         return DeleteUserResult(success=False, error=_error(conn, "cancelled"))
@@ -373,9 +363,7 @@ def modify_user(
 
     approved_by_badge = _is_active_admin_badge(conn, database.normalize_badge_uid(approving_uid))
     if not approved_by_badge and not _matches_admin_secret_key(conn, approving_uid):
-        return ModifyUserResult(
-            success=False, error=_error(conn, "not_admin")
-        )
+        return ModifyUserResult(success=False, error=_error(conn, "not_admin"))
 
     updated_uid = norm_target
     if new_badge_uid is not None and new_badge_uid.strip() != "":
@@ -407,9 +395,7 @@ def modify_user(
         if new_grade is not None and str(new_grade).strip() not in ("", str(updated_grade)):
             rank = _grade_rank(new_grade, school)
             if rank is None:
-                return ModifyUserResult(
-                    success=False, error=_error(conn, "grade_range")
-                )
+                return ModifyUserResult(success=False, error=_error(conn, "grade_range"))
             updated_grade = rank
 
         typed_section = (new_section or "").strip()
@@ -421,9 +407,7 @@ def modify_user(
 
         if new_guardians is not None:
             if len(new_guardians) > 2:
-                return ModifyUserResult(
-                    success=False, error=_error(conn, "too_many_guardians")
-                )
+                return ModifyUserResult(success=False, error=_error(conn, "too_many_guardians"))
             clean_guardians, guardian_error = _checked_guardians(conn, new_guardians, target.get("guardians"))
             if guardian_error:
                 return ModifyUserResult(success=False, error=guardian_error)
@@ -742,6 +726,3 @@ def wipe_history(
         cursor.execute("DELETE FROM security_incidents")
 
     return WipeResult(success=True, backup_path=b_path)
-
-
-

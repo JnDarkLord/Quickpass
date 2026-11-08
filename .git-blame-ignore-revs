@@ -1,0 +1,5 @@
+# Mechanical formatting commits, skipped by `git blame` (GitHub reads this file automatically).
+# Locally: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: format Python with Ruff
+7861b0f7dbc63977e1242c1a4fe3603c66aa6acb

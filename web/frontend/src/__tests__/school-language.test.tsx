@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import * as XLSX from "xlsx"
+import { exportRows } from "@/lib/spreadsheet"
 import { App } from "@/App"
 import {
   ERR_UNAUTHORIZED_EMAIL,
@@ -15,10 +15,7 @@ import {
 import type { UserProfile } from "@/context/AuthContext"
 import { emptyYearView, englishSchool, mockBackend, spanishSchool, stubSupabaseHttp } from "./support"
 
-vi.mock("xlsx", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("xlsx")>()
-  return { ...actual, writeFile: vi.fn() }
-})
+vi.mock("@/lib/spreadsheet", () => ({ exportRows: vi.fn() }))
 
 const teacher: UserProfile = {
   id: 20,
@@ -236,7 +233,7 @@ describe("The portal speaks the School Language", () => {
     await user.click(await screen.findByRole("button", { name: /Year View/ }))
     await user.click(await screen.findByRole("button", { name: "Export Matrix (.xlsx)" }))
 
-    expect(XLSX.writeFile).toHaveBeenCalledWith(expect.anything(), "Attendance_Matrix_Grade 5.xlsx")
+    expect(exportRows).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ fileName: "Attendance_Matrix_Grade 5.xlsx" }))
   })
 
   it("reads the School Language afresh each time the portal opens", async () => {

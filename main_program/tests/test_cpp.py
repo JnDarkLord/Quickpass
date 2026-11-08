@@ -32,4 +32,3 @@ def test_cpp_suites_pass():
     assert result.returncode == 0, f"C++ tests failed:\n{result.stdout}\n{result.stderr}"
     assert "All firmware parser tests passed successfully!" in result.stdout
     assert "All door logic tests passed successfully!" in result.stdout
-

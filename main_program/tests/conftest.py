@@ -62,7 +62,7 @@ def postgres_url() -> str:
     url = url or "postgresql://localhost:5432/quickpass"
     for prefix in ("postgresql+psycopg2://", "postgres://"):
         if url.startswith(prefix):
-            return "postgresql://" + url[len(prefix):]
+            return "postgresql://" + url[len(prefix) :]
     return url
 
 
@@ -154,9 +154,7 @@ def messages(monkeypatch):
 
     shown = []
     for kind in ("information", "warning", "critical"):
-        monkeypatch.setattr(
-            gui.QMessageBox, kind, lambda *args, _kind=kind, **kwargs: shown.append((_kind, args[2]))
-        )
+        monkeypatch.setattr(gui.QMessageBox, kind, lambda *args, _kind=kind, **kwargs: shown.append((_kind, args[2])))
     monkeypatch.setattr(gui.QMessageBox, "exec", lambda box: shown.append(("box", box.text())) or 0)
     return shown
 
@@ -166,8 +164,9 @@ def approval(monkeypatch):
     """Admin Approval dialogs are answered by typing `approval.key`, the School's key unless a test
     changes it, or by scanning `approval.badge` once a test sets one. `approval.key_offered` tells
     whether the last dialog offered the key at all."""
-    import gui
     from PySide6.QtWidgets import QDialog
+
+    import gui
 
     state = SimpleNamespace(key=ADMIN_SECRET_KEY, badge=None, asked=0, key_offered=None)
 

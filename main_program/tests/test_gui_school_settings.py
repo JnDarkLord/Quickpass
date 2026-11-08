@@ -15,6 +15,7 @@ import pytest
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from conftest import ADMIN_SECRET_KEY, make_school, store_school
 from PySide6.QtCore import QDate, QLocale, Qt, QTime
 from PySide6.QtWidgets import QApplication, QDialog
 
@@ -24,7 +25,6 @@ import cloud_sync
 import database
 import gui
 import school_settings
-from conftest import ADMIN_SECRET_KEY, make_school, store_school
 from gui import HardwareWorker, MainWindow
 from school_settings import SchoolSettings
 
@@ -123,7 +123,13 @@ def test_first_run_setup_saves_the_school_settings_for_cloud_sync_to_push(wizard
     assert wizard._summary_rows["sections"][1].text() == "Blue, Green (2)"
 
     assert [box.text() for box in wizard.weekdays.boxes] == [
-        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
     ]
     assert wizard.weekdays.days() == (0, 1, 2, 3, 4)
     wizard.weekdays.boxes[5].setChecked(True)
@@ -245,14 +251,17 @@ def test_the_setup_runs_only_when_neither_the_station_nor_supabase_has_school_se
 
 def test_school_settings_view_shows_the_schools_settings(qapp, settings):
     conn = database.connect(settings.database_path)
-    store_school(conn, make_school(
-        grades=("Pre-K", "Kinder", "1st"),
-        sections=("Única", "Azul"),
-        active_weekdays=(0, 1, 2, 3, 4, 5),
-        holidays=(date(2026, 12, 25),),
-        late_threshold=time(7, 15),
-        cooldown_seconds=120,
-    ))
+    store_school(
+        conn,
+        make_school(
+            grades=("Pre-K", "Kinder", "1st"),
+            sections=("Única", "Azul"),
+            active_weekdays=(0, 1, 2, 3, 4, 5),
+            holidays=(date(2026, 12, 25),),
+            late_threshold=time(7, 15),
+            cooldown_seconds=120,
+        ),
+    )
     conn.close()
     worker = HardwareWorker(settings)
     view = gui.SchoolSettingsView(worker)
@@ -334,7 +343,9 @@ def test_switching_the_school_language_rebuilds_every_window_and_the_gate_screen
 
     assert window.windowTitle() == "Quickpass - School Attendance and Access Control"
     assert [button.text() for button in window.nav_buttons] == [
-        "Search and Reports", "Badge Management", "School Settings",
+        "Search and Reports",
+        "Badge Management",
+        "School Settings",
     ]
     assert window.lbl_hw_status.text() == "Searching for the Arduino..."
     assert window.view_stack.currentIndex() == 2
@@ -379,10 +390,12 @@ def test_removing_a_grade_that_people_hold_is_refused_before_approval(settings, 
 
     panel.btn_save.click()
 
-    assert messages == [(
-        "warning",
-        'El grado "11°" aún tiene 1 estudiantes o profesores activos. Muévalos a otro grado antes de quitarlo.',
-    )]
+    assert messages == [
+        (
+            "warning",
+            'El grado "11°" aún tiene 1 estudiantes o profesores activos. Muévalos a otro grado antes de quitarlo.',
+        )
+    ]
     assert approval.asked == 0
     assert _stored(settings).school.grades == SPANISH_GRADES
 

@@ -14,15 +14,16 @@ from __future__ import annotations
 import os
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import replace
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 # Ensure main_program is in import path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from PySide6.QtCore import QDate, QLocale, QRect, QRectF, QSize, Qt, QThread, QTimer, QUrl, Signal, Slot
+from PySide6.QtCore import QDate, QLocale, QRectF, Qt, QThread, QTimer, QUrl, Signal, Slot
 from PySide6.QtGui import (
     QColor,
     QDesktopServices,
@@ -42,8 +43,6 @@ from PySide6.QtWidgets import (
     QComboBox,
     QDateEdit,
     QDialog,
-    QDialogButtonBox,
-    QFileDialog,
     QFormLayout,
     QFrame,
     QGridLayout,
@@ -72,7 +71,6 @@ from PySide6.QtWidgets import (
 import access_control
 import admin
 import arduino
-from arduino import ArduinoError, ArduinoLink
 import cloud_sync
 import database
 import i18n
@@ -80,6 +78,7 @@ import reports
 import school_settings
 import search
 import sms
+from arduino import ArduinoError, ArduinoLink
 from config import ConfigError, Settings, load_settings
 
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
@@ -90,7 +89,7 @@ LOGO_ICNS = ASSETS_DIR / "logo.icns"
 
 ROLES = ("student", "teacher", "admin", "visitor", "graduate")
 
-_school: Optional[school_settings.SchoolSettings] = None
+_school: school_settings.SchoolSettings | None = None
 _language = i18n.LANGUAGES[0]
 
 
@@ -163,11 +162,11 @@ def final_grade_text() -> str:
     return grade_text(len(school_grades()))
 
 
-def grade_section_text(rank: Any, section: Optional[str]) -> str:
+def grade_section_text(rank: Any, section: str | None) -> str:
     return " ".join(part for part in (grade_text(rank), section or "") if part)
 
 
-def fill_grade_combo(combo: QComboBox, current: Optional[int] = None) -> None:
+def fill_grade_combo(combo: QComboBox, current: int | None = None) -> None:
     """The School's Grades in order, each holding its rank. A current rank the School
     no longer lists stays selectable, so saving other changes keeps it."""
     combo.clear()
@@ -179,7 +178,7 @@ def fill_grade_combo(combo: QComboBox, current: Optional[int] = None) -> None:
         combo.setCurrentIndex(combo.findData(current))
 
 
-def fill_section_combo(combo: QComboBox, current: Optional[str] = None) -> None:
+def fill_section_combo(combo: QComboBox, current: str | None = None) -> None:
     """The School's Sections. A current Section the School no longer lists stays selectable."""
     combo.clear()
     for section in school_sections():
@@ -201,7 +200,7 @@ def load_school(settings: Settings) -> school_settings.SchoolSettings:
         conn.close()
 
 
-def app_icon_path(platform: str = sys.platform) -> Optional[Path]:
+def app_icon_path(platform: str = sys.platform) -> Path | None:
     """The Quickpass icon file for `platform`; only macOS reads the `.icns` format."""
     candidates = [LOGO_ROUNDED_PNG, LOGO_PNG, LOGO_PATH]
     if platform == "darwin":
@@ -218,7 +217,7 @@ def get_app_icon() -> QIcon:
 def get_rounded_pixmap(
     pixmap: QPixmap,
     radius: int = 28,
-    border_color: Optional[str] = None,
+    border_color: str | None = None,
     border_width: int = 0,
 ) -> QPixmap:
     """Clip a pixmap with smooth antialiased circular rounded corners and optional border outline."""
@@ -254,32 +253,32 @@ def get_rounded_pixmap(
 # UI/UX Brand Design Tokens (Derived from Quickpass Logo & WCAG Guidelines)
 # ---------------------------------------------------------------------------
 # 1. Brand & UI Core Colors
-COLOR_PRIMARY = "#122A42"       # Technical Deep Navy: main headings, text, brand headers
-COLOR_SECONDARY = "#4A607A"     # Modern Slate Blue: subheadings, borders, captions, labels
-COLOR_ACCENT = "#0066FF"        # Electric Blue: CTA buttons, active links, primary highlights
+COLOR_PRIMARY = "#122A42"  # Technical Deep Navy: main headings, text, brand headers
+COLOR_SECONDARY = "#4A607A"  # Modern Slate Blue: subheadings, borders, captions, labels
+COLOR_ACCENT = "#0066FF"  # Electric Blue: CTA buttons, active links, primary highlights
 COLOR_ACCENT_HOVER = "#0052CC"  # Hover state for primary buttons
-COLOR_DARK_BLUE = "#27475c"     # Dark slate blue: sidebar hover accents, logo border, live card
-COLOR_SIDEBAR_HOVER = "#27475c" # Darker blue hover for sidebar lateral buttons
+COLOR_DARK_BLUE = "#27475c"  # Dark slate blue: sidebar hover accents, logo border, live card
+COLOR_SIDEBAR_HOVER = "#27475c"  # Darker blue hover for sidebar lateral buttons
 
 # 2. Surfaces & Backgrounds
-COLOR_BG_LIGHT = "#F4F8FB"      # Soft off-white with cool blue tint (anti-fatigue canvas)
-COLOR_SIDEBAR_BG = "#A4D0E9"    # Logo background light blue (#A4D0E9)
-COLOR_SIDEBAR_BORDER = "#8CB8D4"# Matching border for logo light blue
-COLOR_SURFACE = "#FFFFFF"       # Cards, dialogs, tables
-COLOR_SURFACE_ALT = "#EDF4FA"   # Subtle tint for active items, table headers
-COLOR_BORDER = "#D1DCE5"        # Neutral border for cards and dividers
+COLOR_BG_LIGHT = "#F4F8FB"  # Soft off-white with cool blue tint (anti-fatigue canvas)
+COLOR_SIDEBAR_BG = "#A4D0E9"  # Logo background light blue (#A4D0E9)
+COLOR_SIDEBAR_BORDER = "#8CB8D4"  # Matching border for logo light blue
+COLOR_SURFACE = "#FFFFFF"  # Cards, dialogs, tables
+COLOR_SURFACE_ALT = "#EDF4FA"  # Subtle tint for active items, table headers
+COLOR_BORDER = "#D1DCE5"  # Neutral border for cards and dividers
 COLOR_INPUT_BORDER = "#B8C8D6"  # Crisp border for inputs and selects
 
 # 3. Functional Status Colors (Quickpass Access Control)
-COLOR_SUCCESS = "#10B981"       # Emerald Green: Access granted, puntual, Excel export
+COLOR_SUCCESS = "#10B981"  # Emerald Green: Access granted, puntual, Excel export
 COLOR_SUCCESS_BG = "#ECFDF5"
 COLOR_SUCCESS_TEXT = "#047857"
 
-COLOR_WARNING = "#F59E0B"       # Amber: Notice, late check-in
+COLOR_WARNING = "#F59E0B"  # Amber: Notice, late check-in
 COLOR_WARNING_BG = "#FFFBEB"
 COLOR_WARNING_TEXT = "#B45309"
 
-COLOR_ERROR = "#EF4444"         # Crimson Red: Denied, blocked, delete
+COLOR_ERROR = "#EF4444"  # Crimson Red: Denied, blocked, delete
 COLOR_ERROR_BG = "#FEF2F2"
 COLOR_ERROR_TEXT = "#DC2626"
 
@@ -300,8 +299,8 @@ class HardwareWorker(QThread):
     scan_event = Signal(dict)
     badge_captured = Signal(str)
     status_changed = Signal(str, bool)  # message, is_connected
-    gate_state = Signal(bool, int)       # is_open, dwell_seconds
-    mode_changed = Signal(str)          # current RFID mode
+    gate_state = Signal(bool, int)  # is_open, dwell_seconds
+    mode_changed = Signal(str)  # current RFID mode
 
     def __init__(self, settings: Settings, parent=None, clock: Callable[[], float] = time.monotonic):
         super().__init__(parent)
@@ -309,12 +308,12 @@ class HardwareWorker(QThread):
         self.link = ArduinoLink(settings)
         self.running = True
         self.rfid_mode = RFIDMode.STANDBY
-        self._pending_commands: List[str] = []
-        self._capture_callback: Optional[Callable[[str], None]] = None
+        self._pending_commands: list[str] = []
+        self._capture_callback: Callable[[str], None] | None = None
         self._clock = clock
         self._debouncer = access_control.ScanDebouncer()
 
-    def set_rfid_mode(self, mode: str, callback: Optional[Callable[[str], None]] = None):
+    def set_rfid_mode(self, mode: str, callback: Callable[[str], None] | None = None):
         self.rfid_mode = mode
         self._capture_callback = callback
         # A window that starts asking for a scan takes the first read, even of a Badge just let through.
@@ -423,7 +422,7 @@ class HardwareWorker(QThread):
         self.gate_state.emit(True, 3)
         self._log_terminal("GATE", "Manual unlock requested.")
 
-    def process_uid(self, uid: str, force_status: Optional[str] = None, now: Optional[datetime] = None):
+    def process_uid(self, uid: str, force_status: str | None = None, now: datetime | None = None):
         uid = uid.strip().upper()
         now = now or datetime.now()
         conn = database.connect(self.settings.database_path)
@@ -440,8 +439,8 @@ class HardwareWorker(QThread):
 
         # Dispatch async SMS/WhatsApp notifications if any
         if res.texts_to_send and self.settings.twilio_enabled:
+            channel = "WhatsApp" if self.settings.twilio_use_whatsapp else "SMS"
             for phone, body in res.texts_to_send:
-                channel = "WhatsApp" if self.settings.twilio_use_whatsapp else "SMS"
                 try:
                     sms.send_sms_async(
                         self.settings,
@@ -499,6 +498,7 @@ class StudentSquareWidget(QFrame):
     """Dedicated Student Card Square that displays student identity,
     high-contrast status badges, gate state, and resets automatically.
     """
+
     def __init__(self, parent=None, is_kiosk=False):
         super().__init__(parent)
         self.is_kiosk = is_kiosk
@@ -534,7 +534,9 @@ class StudentSquareWidget(QFrame):
         top_bar.addStretch()
 
         self.gate_badge = QLabel(tr("gui.scan_tile.gate_closed"))
-        self.gate_badge.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px;")
+        self.gate_badge.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px;"
+        )
         top_bar.addWidget(self.gate_badge)
         layout.addLayout(top_bar)
 
@@ -584,15 +586,21 @@ class StudentSquareWidget(QFrame):
         chips_row.setSpacing(8)
 
         self.lbl_grade = QLabel(tr("gui.scan_tile.school"))
-        self.lbl_grade.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_BORDER}; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;")
+        self.lbl_grade.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_BORDER}; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;"
+        )
         chips_row.addWidget(self.lbl_grade)
 
         self.lbl_uid = QLabel(tr("gui.scan_tile.reader_ready"))
-        self.lbl_uid.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 11px;")
+        self.lbl_uid.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 11px;"
+        )
         chips_row.addWidget(self.lbl_uid)
 
         self.lbl_phone = QLabel(tr("gui.scan_tile.whatsapp_active"))
-        self.lbl_phone.setStyleSheet(f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;")
+        self.lbl_phone.setStyleSheet(
+            f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;"
+        )
         chips_row.addWidget(self.lbl_phone)
 
         chips_row.addStretch()
@@ -621,7 +629,7 @@ class StudentSquareWidget(QFrame):
 
         self.lbl_name.setText(name)
         self.avatar.setText(initials)
-        self.lbl_grade.setText(f"{role_text(role).upper()} • {grade_sec}".strip(" • "))
+        self.lbl_grade.setText(" • ".join(part for part in (role_text(role).upper(), grade_sec) if part))
         self.lbl_uid.setText(f"UID: {uid}")
         self.lbl_phone.setText(f"WA: {phone}" if phone != "N/A" else tr("gui.scan_tile.no_whatsapp"))
         self.lbl_time.setText(
@@ -635,36 +643,68 @@ class StudentSquareWidget(QFrame):
         # Color Banner Logic adhering to functional status palette
         if not is_registered:
             self.status_banner.setText(tr("gui.scan_tile.banner.unregistered"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;"
+            )
         elif event_type == "graduate_denied":
             self.status_banner.setText(tr("gui.scan_tile.banner.graduate_denied"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;"
+            )
         elif event_type == "inactive_denied":
             self.status_banner.setText(tr("gui.scan_tile.banner.inactive_denied"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;"
+            )
         elif event_type == "access_denied":
             self.status_banner.setText(tr("gui.scan_tile.banner.access_denied"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_ERROR}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 2px solid #F87171; border-radius: 32px;"
+            )
         elif event_type == "check_out":
             self.status_banner.setText(tr("gui.scan_tile.banner.check_out"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_ACCENT}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 2px solid {COLOR_INPUT_BORDER}; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_ACCENT}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 2px solid {COLOR_INPUT_BORDER}; border-radius: 32px;"
+            )
         elif status == "on_time":
             self.status_banner.setText(tr("gui.scan_tile.banner.on_time"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_SUCCESS}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; border: 2px solid #6EE7B7; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_SUCCESS}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; border: 2px solid #6EE7B7; border-radius: 32px;"
+            )
         elif status == "late":
             self.status_banner.setText(tr("gui.scan_tile.banner.late"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_WARNING}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_WARNING_BG}; color: {COLOR_WARNING_TEXT}; border: 2px solid #FCD34D; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_WARNING}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_WARNING_BG}; color: {COLOR_WARNING_TEXT}; border: 2px solid #FCD34D; border-radius: 32px;"
+            )
         else:
             self.status_banner.setText(tr("gui.scan_tile.banner.granted"))
-            self.status_banner.setStyleSheet(f"background-color: {COLOR_SUCCESS}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
-            self.avatar.setStyleSheet(f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; border: 2px solid #6EE7B7; border-radius: 32px;")
+            self.status_banner.setStyleSheet(
+                f"background-color: {COLOR_SUCCESS}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+            )
+            self.avatar.setStyleSheet(
+                f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; border: 2px solid #6EE7B7; border-radius: 32px;"
+            )
 
         # Start 6-second reset timer
         self.reset_timer.start()
@@ -672,17 +712,25 @@ class StudentSquareWidget(QFrame):
     def set_gate_state(self, is_open: bool, dwell: int = 3):
         if is_open:
             self.gate_badge.setText(tr("gui.scan_tile.gate_open", seconds=dwell))
-            self.gate_badge.setStyleSheet(f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px;")
+            self.gate_badge.setStyleSheet(
+                f"background-color: {COLOR_SUCCESS_BG}; color: {COLOR_SUCCESS_TEXT}; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px;"
+            )
         else:
             self.gate_badge.setText(tr("gui.scan_tile.gate_closed"))
-            self.gate_badge.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px;")
+            self.gate_badge.setStyleSheet(
+                f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px;"
+            )
 
     def set_idle_state(self):
         self.status_banner.setText(tr("gui.scan_tile.ready"))
-        self.status_banner.setStyleSheet(f"background-color: {COLOR_ACCENT}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;")
+        self.status_banner.setStyleSheet(
+            f"background-color: {COLOR_ACCENT}; color: #FFFFFF; padding: 10px; border-radius: 8px; font-weight: bold;"
+        )
         self.lbl_name.setText(tr("gui.scan_tile.prompt"))
         self.avatar.setText("QP")
-        self.avatar.setStyleSheet(f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 2px solid {COLOR_INPUT_BORDER}; border-radius: 32px;")
+        self.avatar.setStyleSheet(
+            f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 2px solid {COLOR_INPUT_BORDER}; border-radius: 32px;"
+        )
         self.lbl_grade.setText(tr("gui.scan_tile.school"))
         self.lbl_uid.setText(tr("gui.scan_tile.reader_ready"))
         self.lbl_phone.setText(tr("gui.scan_tile.whatsapp_active"))
@@ -728,12 +776,16 @@ class TypedBadgeInput(QWidget):
 
         self.inp_uid = QLineEdit()
         self.inp_uid.setPlaceholderText(tr("gui.demo.uid_placeholder"))
-        self.inp_uid.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 6px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-family: monospace;")
+        self.inp_uid.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 6px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-family: monospace;"
+        )
         self.inp_uid.returnPressed.connect(self._use_uid)
         layout.addWidget(self.inp_uid, stretch=1)
 
         self.btn_use = QPushButton(button_text or tr("gui.demo.use_uid"))
-        self.btn_use.setStyleSheet(f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 6px 10px; font-weight: 500;")
+        self.btn_use.setStyleSheet(
+            f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 6px 10px; font-weight: 500;"
+        )
         self.btn_use.clicked.connect(self._use_uid)
         layout.addWidget(self.btn_use)
 
@@ -836,7 +888,9 @@ class LiveAccessWindow(QMainWindow):
 
         self.btn_fs = QPushButton(tr("gui.live.fullscreen"))
         self.btn_fs.setFixedHeight(38)
-        self.btn_fs.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; padding: 0 12px; font-weight: 500;")
+        self.btn_fs.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; padding: 0 12px; font-weight: 500;"
+        )
         self.btn_fs.clicked.connect(self.toggle_fullscreen)
         header.addWidget(self.btn_fs)
 
@@ -856,7 +910,9 @@ class LiveAccessWindow(QMainWindow):
         # Demo Mode only: a typed Badge UID, or a Badge no one holds, stands in for a scan
         self.sim_frame = QFrame()
         self.sim_frame.setObjectName("sim_frame")
-        self.sim_frame.setStyleSheet(f"QFrame#sim_frame {{ background-color: {COLOR_SURFACE}; border: 1px solid {COLOR_BORDER}; border-radius: 10px; padding: 12px; }}")
+        self.sim_frame.setStyleSheet(
+            f"QFrame#sim_frame {{ background-color: {COLOR_SURFACE}; border: 1px solid {COLOR_BORDER}; border-radius: 10px; padding: 12px; }}"
+        )
         sim_lay = QVBoxLayout(self.sim_frame)
         sim_lay.setSpacing(8)
 
@@ -869,7 +925,9 @@ class LiveAccessWindow(QMainWindow):
         sim_lay.addWidget(self.typed_badge)
 
         self.btn_sim_unregistered = QPushButton(tr("gui.live.simulate_unregistered"))
-        self.btn_sim_unregistered.setStyleSheet(f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 1px solid #FECACA; border-radius: 6px; padding: 6px 10px; font-weight: 500;")
+        self.btn_sim_unregistered.setStyleSheet(
+            f"background-color: {COLOR_ERROR_BG}; color: {COLOR_ERROR_TEXT}; border: 1px solid #FECACA; border-radius: 6px; padding: 6px 10px; font-weight: 500;"
+        )
         self.btn_sim_unregistered.clicked.connect(lambda: self.worker.process_uid("99887766"))
         sim_lay.addWidget(self.btn_sim_unregistered)
 
@@ -889,13 +947,15 @@ class LiveAccessWindow(QMainWindow):
 
         self.feed_table = QTableWidget()
         self.feed_table.setColumnCount(5)
-        self.feed_table.setHorizontalHeaderLabels([
-            tr("gui.live.column.time"),
-            tr("gui.live.column.person"),
-            tr("gui.live.column.role"),
-            tr("gui.live.column.grade"),
-            tr("gui.live.column.result"),
-        ])
+        self.feed_table.setHorizontalHeaderLabels(
+            [
+                tr("gui.live.column.time"),
+                tr("gui.live.column.person"),
+                tr("gui.live.column.role"),
+                tr("gui.live.column.grade"),
+                tr("gui.live.column.result"),
+            ]
+        )
         self.feed_table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.feed_table.horizontalHeader().setStretchLastSection(True)
         self.feed_table.setColumnWidth(0, 95)
@@ -996,7 +1056,7 @@ class LiveAccessWindow(QMainWindow):
         self.student_square.set_gate_state(is_open, dwell)
 
 
-def resolve_post_dialog_rfid_mode(preferred_mode: Optional[str] = None) -> str:
+def resolve_post_dialog_rfid_mode(preferred_mode: str | None = None) -> str:
     """Determine the proper RFID mode when a Badge dialog closes.
     If LiveAccessWindow is currently open, we must return to ACCESS_CONTROL so
     scans continue processing. Otherwise, fallback to STANDBY.
@@ -1019,7 +1079,7 @@ class AdminAuthDialog(QDialog):
         self,
         worker: HardwareWorker,
         parent=None,
-        operation_title: Optional[str] = None,
+        operation_title: str | None = None,
         allow_secret_key: bool = True,
     ):
         super().__init__(parent)
@@ -1050,7 +1110,9 @@ class AdminAuthDialog(QDialog):
         title.setStyleSheet(f"color: {COLOR_PRIMARY};")
         layout.addWidget(title)
 
-        description_key = "gui.admin_auth.description" if self.allow_secret_key else "gui.admin_auth.description_scan_only"
+        description_key = (
+            "gui.admin_auth.description" if self.allow_secret_key else "gui.admin_auth.description_scan_only"
+        )
         desc = QLabel(tr(description_key, operation=operation_title))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: {COLOR_SECONDARY}; font-size: 12px; line-height: 1.4;")
@@ -1097,10 +1159,14 @@ class AdminAuthDialog(QDialog):
         key_lay.setContentsMargins(0, 0, 0, 0)
         key_lay.setSpacing(6)
         div_lay = QHBoxLayout()
-        line1 = QFrame(); line1.setFrameShape(QFrame.HLine); line1.setStyleSheet(f"color: {COLOR_BORDER};")
+        line1 = QFrame()
+        line1.setFrameShape(QFrame.HLine)
+        line1.setStyleSheet(f"color: {COLOR_BORDER};")
         div_lbl = QLabel(tr("gui.admin_auth.or_key"))
         div_lbl.setStyleSheet(f"color: {COLOR_SECONDARY}; font-size: 11px;")
-        line2 = QFrame(); line2.setFrameShape(QFrame.HLine); line2.setStyleSheet(f"color: {COLOR_BORDER};")
+        line2 = QFrame()
+        line2.setFrameShape(QFrame.HLine)
+        line2.setStyleSheet(f"color: {COLOR_BORDER};")
         div_lay.addWidget(line1)
         div_lay.addWidget(div_lbl)
         div_lay.addWidget(line2)
@@ -1113,7 +1179,9 @@ class AdminAuthDialog(QDialog):
         self.inp_key = QLineEdit()
         self.inp_key.setEchoMode(QLineEdit.Password)
         self.inp_key.setPlaceholderText(tr("gui.admin_auth.key_placeholder"))
-        self.inp_key.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 8px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_key.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 8px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         self.inp_key.returnPressed.connect(self.verify_key)
         key_lay.addWidget(self.inp_key)
         self.key_box.setVisible(self.allow_secret_key)
@@ -1144,7 +1212,9 @@ class AdminAuthDialog(QDialog):
 
         btn_cancel = QPushButton(tr("gui.common.cancel"))
         btn_cancel.setFixedHeight(38)
-        btn_cancel.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px;")
+        btn_cancel.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px;"
+        )
         btn_cancel.clicked.connect(self.reject)
         btn_box.addWidget(btn_cancel, stretch=1)
         layout.addLayout(btn_box)
@@ -1224,7 +1294,7 @@ class BadgeScanDialog(QDialog):
     def __init__(self, worker: HardwareWorker, parent=None):
         super().__init__(parent)
         self.worker = worker
-        self.badge_uid: Optional[str] = None
+        self.badge_uid: str | None = None
         self.setWindowTitle(tr("gui.badge_scan.window_title"))
         self.setWindowIcon(get_app_icon())
         self.setFixedWidth(420)
@@ -1248,7 +1318,9 @@ class BadgeScanDialog(QDialog):
 
         btn_cancel = QPushButton(tr("gui.common.cancel"))
         btn_cancel.setFixedHeight(36)
-        btn_cancel.setStyleSheet(f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        btn_cancel.setStyleSheet(
+            f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         btn_cancel.clicked.connect(self.reject)
         layout.addWidget(btn_cancel)
 
@@ -1349,16 +1421,22 @@ class RegisterVisitDialog(QDialog):
 
         self.inp_name = QLineEdit()
         self.inp_name.setPlaceholderText(tr("gui.visit.name_placeholder"))
-        self.inp_name.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 7px 10px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_name.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 7px 10px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         f_lay.addRow(tr("gui.visit.name_label"), self.inp_name)
 
         self.inp_id = QLineEdit()
         self.inp_id.setPlaceholderText(tr("gui.visit.id_placeholder"))
-        self.inp_id.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 7px 10px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_id.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 7px 10px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         f_lay.addRow(tr("gui.visit.id_label"), self.inp_id)
 
         self.inp_uid = badge_uid_input(self.worker.settings, "gui.visit.uid_placeholder")
-        self.inp_uid.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 7px 10px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-family: monospace;")
+        self.inp_uid.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 7px 10px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-family: monospace;"
+        )
         f_lay.addRow(tr("gui.visit.uid_label"), self.inp_uid)
 
         layout.addWidget(form_frame)
@@ -1382,7 +1460,9 @@ class RegisterVisitDialog(QDialog):
 
         btn_cancel = QPushButton(tr("gui.common.cancel"))
         btn_cancel.setFixedHeight(40)
-        btn_cancel.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px;")
+        btn_cancel.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px;"
+        )
         btn_cancel.clicked.connect(self.reject)
         btn_box.addWidget(btn_cancel, stretch=1)
         layout.addLayout(btn_box)
@@ -1572,7 +1652,9 @@ class RegisterBadgeDialog(QDialog):
         # UID Field
         self.inp_uid = badge_uid_input(self.worker.settings, "gui.register.uid_placeholder")
         self.inp_uid.setFont(QFont("Arial", 12, QFont.Bold))
-        self.inp_uid.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_ACCENT}; padding: 6px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_uid.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_ACCENT}; padding: 6px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         self.inp_uid.textChanged.connect(self.on_uid_text_changed)
         s_form.addRow(tr("gui.common.badge_uid"), self.inp_uid)
 
@@ -1584,13 +1666,17 @@ class RegisterBadgeDialog(QDialog):
         # Name Field
         self.inp_name = QLineEdit()
         self.inp_name.setPlaceholderText(tr("gui.register.name_placeholder"))
-        self.inp_name.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_name.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         s_form.addRow(tr("gui.common.full_name"), self.inp_name)
 
         # Role Field
         self.combo_role = QComboBox()
         self.combo_role.addItems([role_text(r) for r in ("student", "teacher", "admin", "visitor")])
-        self.combo_role.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.combo_role.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         self.combo_role.currentIndexChanged.connect(self.on_role_changed)
         s_form.addRow(tr("gui.common.role"), self.combo_role)
 
@@ -1599,7 +1685,9 @@ class RegisterBadgeDialog(QDialog):
         self.lbl_grade.setStyleSheet(f"color: {COLOR_PRIMARY}; font-weight: bold;")
         self.combo_grade = QComboBox()
         fill_grade_combo(self.combo_grade)
-        self.combo_grade.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.combo_grade.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         s_form.addRow(self.lbl_grade, self.combo_grade)
 
         # Section Field (Only for students; teachers teach the entire grade without section)
@@ -1607,7 +1695,9 @@ class RegisterBadgeDialog(QDialog):
         self.lbl_sec.setStyleSheet(f"color: {COLOR_PRIMARY}; font-weight: bold;")
         self.combo_sec = QComboBox()
         fill_section_combo(self.combo_sec)
-        self.combo_sec.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.combo_sec.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         s_form.addRow(self.lbl_sec, self.combo_sec)
 
         # Family ID Field (Auto-suggested correlative FAM-XXXX or sibling-linked)
@@ -1619,7 +1709,9 @@ class RegisterBadgeDialog(QDialog):
         self.lbl_family_id.setStyleSheet(f"color: {COLOR_PRIMARY}; font-weight: bold;")
         self.inp_family_id = QLineEdit(next_fam)
         self.inp_family_id.setPlaceholderText(tr("gui.common.family_code_placeholder"))
-        self.inp_family_id.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-weight: bold;")
+        self.inp_family_id.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-weight: bold;"
+        )
         s_form.addRow(self.lbl_family_id, self.inp_family_id)
 
         self.lbl_family_hint = QLabel(tr("gui.register.family_hint", code=next_fam))
@@ -1651,18 +1743,24 @@ class RegisterBadgeDialog(QDialog):
 
         self.inp_g1_name = QLineEdit()
         self.inp_g1_name.setPlaceholderText(tr("gui.register.guardian1_name_placeholder"))
-        self.inp_g1_name.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_g1_name.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         g1_form.addRow(tr("gui.common.name"), self.inp_g1_name)
 
         self.inp_g1_phone = QLineEdit()
         self.inp_g1_phone.setPlaceholderText(tr("gui.register.guardian1_phone_placeholder"))
-        self.inp_g1_phone.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_g1_phone.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         self.inp_g1_phone.textChanged.connect(self._check_sibling_phone)
         g1_form.addRow(tr("gui.common.whatsapp_phone"), self.inp_g1_phone)
 
         self.inp_g1_email = QLineEdit()
         self.inp_g1_email.setPlaceholderText(tr("gui.register.guardian1_email_placeholder"))
-        self.inp_g1_email.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_g1_email.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         g1_form.addRow(tr("gui.common.email"), self.inp_g1_email)
 
         form_layout.addWidget(self.g1_box)
@@ -1689,18 +1787,24 @@ class RegisterBadgeDialog(QDialog):
 
         self.inp_g2_name = QLineEdit()
         self.inp_g2_name.setPlaceholderText(tr("gui.register.guardian2_name_placeholder"))
-        self.inp_g2_name.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_g2_name.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         g2_form.addRow(tr("gui.common.name"), self.inp_g2_name)
 
         self.inp_g2_phone = QLineEdit()
         self.inp_g2_phone.setPlaceholderText(tr("gui.register.guardian2_phone_placeholder"))
-        self.inp_g2_phone.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_g2_phone.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         self.inp_g2_phone.textChanged.connect(self._check_sibling_phone)
         g2_form.addRow(tr("gui.common.whatsapp_phone"), self.inp_g2_phone)
 
         self.inp_g2_email = QLineEdit()
         self.inp_g2_email.setPlaceholderText(tr("gui.register.guardian2_email_placeholder"))
-        self.inp_g2_email.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_g2_email.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         g2_form.addRow(tr("gui.common.email"), self.inp_g2_email)
 
         form_layout.addWidget(self.g2_box)
@@ -1731,7 +1835,9 @@ class RegisterBadgeDialog(QDialog):
 
         btn_cancel = QPushButton(tr("gui.common.cancel"))
         btn_cancel.setFixedHeight(40)
-        btn_cancel.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; font-weight: 500;")
+        btn_cancel.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; font-weight: 500;"
+        )
         btn_cancel.clicked.connect(self.reject)
         btn_box.addWidget(btn_cancel, stretch=1)
 
@@ -1748,7 +1854,9 @@ class RegisterBadgeDialog(QDialog):
             conn.close()
             if match:
                 self.inp_family_id.setText(match["family_id"])
-                self.lbl_family_hint.setText(tr("gui.register.family_linked", code=match["family_id"], sibling=match["sibling_name"]))
+                self.lbl_family_hint.setText(
+                    tr("gui.register.family_linked", code=match["family_id"], sibling=match["sibling_name"])
+                )
                 self.lbl_family_hint.setStyleSheet(f"color: {COLOR_ACCENT}; font-size: 11px; font-weight: bold;")
 
     @Slot(str)
@@ -1785,7 +1893,9 @@ class RegisterBadgeDialog(QDialog):
         conn.close()
 
         if existing:
-            self.lbl_uid_validation.setText(tr("gui.register.badge_taken", name=existing["full_name"], role=role_text(existing["role"])))
+            self.lbl_uid_validation.setText(
+                tr("gui.register.badge_taken", name=existing["full_name"], role=role_text(existing["role"]))
+            )
             self.lbl_uid_validation.setStyleSheet(f"color: {COLOR_ERROR_TEXT}; font-size: 11px; font-weight: bold;")
             self.btn_save.setEnabled(False)
         else:
@@ -1794,8 +1904,8 @@ class RegisterBadgeDialog(QDialog):
             self.btn_save.setEnabled(True)
 
     def on_role_changed(self, idx: int):
-        is_student = (idx == 0)
-        is_teacher = (idx == 1)
+        is_student = idx == 0
+        is_teacher = idx == 1
 
         # Grade is shown for students (their Grade) and teachers (the Grade they teach)
         self.lbl_grade.setVisible(is_student or is_teacher)
@@ -1823,14 +1933,14 @@ class RegisterBadgeDialog(QDialog):
 
         role_map = {0: "student", 1: "teacher", 2: "admin", 3: "visitor"}
         role = role_map.get(self.combo_role.currentIndex(), "student")
-        is_student = (role == "student")
-        is_teacher = (role == "teacher")
+        is_student = role == "student"
+        is_teacher = role == "teacher"
 
         grade = self.combo_grade.currentData() if (is_student or is_teacher) else None
         section = self.combo_sec.currentData() if is_student else None
         family_id = self.inp_family_id.text().strip().upper() if is_student else None
 
-        guardians: List[admin.GuardianData] = []
+        guardians: list[admin.GuardianData] = []
         if is_student:
             g1_name = self.inp_g1_name.text().strip()
             g1_phone = self.inp_g1_phone.text().strip()
@@ -1882,16 +1992,21 @@ class RegisterBadgeDialog(QDialog):
     def _school_has_an_admin(self) -> bool:
         conn = database.connect(self.worker.settings.database_path)
         try:
-            return conn.execute("SELECT 1 FROM users WHERE role = 'admin' AND is_active = 1 LIMIT 1").fetchone() is not None
+            return (
+                conn.execute("SELECT 1 FROM users WHERE role = 'admin' AND is_active = 1 LIMIT 1").fetchone()
+                is not None
+            )
         finally:
             conn.close()
 
-    def _admin_scan_approval(self, name: str) -> Optional[str]:
+    def _admin_scan_approval(self, name: str) -> str | None:
         """The Badge UID of the Admin who scans to approve adding `name` as another Admin, or
         None if no one does; the Admin Secret Key cannot stand in for that scan."""
         self._approving = True
         try:
-            auth = AdminAuthDialog(self.worker, self, tr("gui.register.add_admin_operation", name=name), allow_secret_key=False)
+            auth = AdminAuthDialog(
+                self.worker, self, tr("gui.register.add_admin_operation", name=name), allow_secret_key=False
+            )
             approved = auth.exec() == QDialog.DialogCode.Accepted
             return auth.auth_token if approved else None
         finally:
@@ -2016,12 +2131,16 @@ class EditBadgeDialog(QDialog):
         self.inp_uid = badge_uid_input(self.worker.settings, "gui.register.uid_placeholder")
         self.inp_uid.setText(self.target_uid)
         self.inp_uid.setFont(QFont("Arial", 12, QFont.Bold))
-        self.inp_uid.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_ACCENT}; padding: 6px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_uid.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_ACCENT}; padding: 6px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         u_form.addRow(tr("gui.common.badge_uid"), self.inp_uid)
 
         current_name = self.user_data.get("full_name", "") if self.user_data else ""
         self.inp_name = QLineEdit(current_name)
-        self.inp_name.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        self.inp_name.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         u_form.addRow(tr("gui.common.full_name"), self.inp_name)
 
         role = self.user_data.get("role", "student") if self.user_data else "student"
@@ -2029,30 +2148,38 @@ class EditBadgeDialog(QDialog):
         lbl_role.setStyleSheet(f"color: {COLOR_SECONDARY}; font-weight: bold; padding: 4px 0;")
         u_form.addRow(tr("gui.common.role"), lbl_role)
 
-        is_student = (role == "student")
-        is_teacher = (role == "teacher")
+        is_student = role == "student"
+        is_teacher = role == "teacher"
 
         if is_student:
             self.combo_grade = QComboBox()
             fill_grade_combo(self.combo_grade, self.user_data.get("grade"))
-            self.combo_grade.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.combo_grade.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             u_form.addRow(tr("gui.common.grade"), self.combo_grade)
 
             self.combo_sec = QComboBox()
             fill_section_combo(self.combo_sec, self.user_data.get("section"))
-            self.combo_sec.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.combo_sec.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             u_form.addRow(tr("gui.common.section"), self.combo_sec)
 
             curr_fam = str(self.user_data.get("family_id") or "")
             self.inp_family_id = QLineEdit(curr_fam)
             self.inp_family_id.setPlaceholderText(tr("gui.common.family_code_placeholder"))
-            self.inp_family_id.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-weight: bold;")
+            self.inp_family_id.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-weight: bold;"
+            )
             u_form.addRow(tr("gui.common.family_code"), self.inp_family_id)
 
         elif is_teacher:
             self.combo_grade = QComboBox()
             fill_grade_combo(self.combo_grade, self.user_data.get("taught_grade"))
-            self.combo_grade.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.combo_grade.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             u_form.addRow(tr("gui.common.grade_taught"), self.combo_grade)
 
         form_layout.addWidget(user_box)
@@ -2082,15 +2209,21 @@ class EditBadgeDialog(QDialog):
             g1_form = QFormLayout(g1_box)
             g1_form.setSpacing(6)
             self.inp_g1_name = QLineEdit(g1.get("name", ""))
-            self.inp_g1_name.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.inp_g1_name.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             g1_form.addRow(tr("gui.common.name"), self.inp_g1_name)
 
             self.inp_g1_phone = QLineEdit(g1.get("phone", ""))
-            self.inp_g1_phone.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.inp_g1_phone.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             g1_form.addRow(tr("gui.common.whatsapp_phone"), self.inp_g1_phone)
 
             self.inp_g1_email = QLineEdit(g1.get("email") or "")
-            self.inp_g1_email.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.inp_g1_email.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             g1_form.addRow(tr("gui.common.email"), self.inp_g1_email)
             form_layout.addWidget(g1_box)
 
@@ -2113,15 +2246,21 @@ class EditBadgeDialog(QDialog):
             g2_form = QFormLayout(g2_box)
             g2_form.setSpacing(6)
             self.inp_g2_name = QLineEdit(g2.get("name", ""))
-            self.inp_g2_name.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.inp_g2_name.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             g2_form.addRow(tr("gui.common.name"), self.inp_g2_name)
 
             self.inp_g2_phone = QLineEdit(g2.get("phone", ""))
-            self.inp_g2_phone.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.inp_g2_phone.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             g2_form.addRow(tr("gui.common.whatsapp_phone"), self.inp_g2_phone)
 
             self.inp_g2_email = QLineEdit(g2.get("email") or "")
-            self.inp_g2_email.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+            self.inp_g2_email.setStyleSheet(
+                f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; padding: 5px; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+            )
             g2_form.addRow(tr("gui.common.email"), self.inp_g2_email)
             form_layout.addWidget(g2_box)
 
@@ -2149,7 +2288,9 @@ class EditBadgeDialog(QDialog):
 
         btn_cancel = QPushButton(tr("gui.common.cancel"))
         btn_cancel.setFixedHeight(40)
-        btn_cancel.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; font-weight: 500;")
+        btn_cancel.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; font-weight: 500;"
+        )
         btn_cancel.clicked.connect(self.reject)
         btn_box.addWidget(btn_cancel, stretch=1)
 
@@ -2174,7 +2315,7 @@ class EditBadgeDialog(QDialog):
         section = self.combo_sec.currentData() if hasattr(self, "combo_sec") else None
         family_id = self.inp_family_id.text().strip().upper() if hasattr(self, "inp_family_id") else None
 
-        guardians: List[admin.GuardianData] | None = None
+        guardians: list[admin.GuardianData] | None = None
         if role == "student":
             guardians = []
             g1_name = self.inp_g1_name.text().strip()
@@ -2259,14 +2400,26 @@ class StatisticsDialog(QDialog):
         title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
         layout.addWidget(title)
 
-        by_role = [(tr(f"gui.stats.role.{role}"), stats.users_by_role.get(role, 0)) for role in ("student", "teacher", "admin", "visitor")]
-        groups = [
-            ("gui.stats.students_by_grade", [(grade_text(rank), count) for rank, count in sorted(stats.students_by_grade.items())]),
-            ("gui.stats.teachers_by_grade", [(grade_text(rank), count) for rank, count in sorted(stats.teachers_by_grade.items())]),
-            ("gui.stats.by_role", by_role + [(tr("gui.stats.role.graduate"), stats.graduates)]),
-            ("gui.stats.recent_check_ins", [(show_date(day.isoformat()), count) for day, count in stats.recent_check_ins]),
+        by_role = [
+            (tr(f"gui.stats.role.{role}"), stats.users_by_role.get(role, 0))
+            for role in ("student", "teacher", "admin", "visitor")
         ]
-        rows: List[tuple[str, str, bool]] = [
+        groups = [
+            (
+                "gui.stats.students_by_grade",
+                [(grade_text(rank), count) for rank, count in sorted(stats.students_by_grade.items())],
+            ),
+            (
+                "gui.stats.teachers_by_grade",
+                [(grade_text(rank), count) for rank, count in sorted(stats.teachers_by_grade.items())],
+            ),
+            ("gui.stats.by_role", by_role + [(tr("gui.stats.role.graduate"), stats.graduates)]),
+            (
+                "gui.stats.recent_check_ins",
+                [(show_date(day.isoformat()), count) for day, count in stats.recent_check_ins],
+            ),
+        ]
+        rows: list[tuple[str, str, bool]] = [
             (tr("gui.stats.total_users"), str(stats.total_users), False),
             (tr("gui.stats.total_check_ins"), str(stats.total_check_ins), False),
         ]
@@ -2283,7 +2436,9 @@ class StatisticsDialog(QDialog):
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setSelectionMode(QTableWidget.SelectionMode.NoSelection)
         self.table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.table.setStyleSheet(f"QTableWidget {{ background-color: {COLOR_SURFACE}; border: 1px solid {COLOR_BORDER}; border-radius: 8px; }}")
+        self.table.setStyleSheet(
+            f"QTableWidget {{ background-color: {COLOR_SURFACE}; border: 1px solid {COLOR_BORDER}; border-radius: 8px; }}"
+        )
         for row, (label, value, is_heading) in enumerate(rows):
             label_item = QTableWidgetItem(label)
             value_item = QTableWidgetItem(value)
@@ -2299,7 +2454,9 @@ class StatisticsDialog(QDialog):
 
         btn_close = QPushButton(tr("gui.common.ok"))
         btn_close.setFixedHeight(36)
-        btn_close.setStyleSheet(f"background-color: {COLOR_ACCENT}; color: white; border-radius: 6px; font-weight: bold;")
+        btn_close.setStyleSheet(
+            f"background-color: {COLOR_ACCENT}; color: white; border-radius: 6px; font-weight: bold;"
+        )
         btn_close.clicked.connect(self.accept)
         layout.addWidget(btn_close)
 
@@ -2353,7 +2510,9 @@ class WipeDialog(QDialog):
         buttons.addWidget(self.btn_wipe, stretch=2)
         btn_cancel = QPushButton(tr("gui.common.cancel"))
         btn_cancel.setFixedHeight(38)
-        btn_cancel.setStyleSheet(f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;")
+        btn_cancel.setStyleSheet(
+            f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px;"
+        )
         btn_cancel.clicked.connect(self.reject)
         buttons.addWidget(btn_cancel, stretch=1)
         layout.addLayout(buttons)
@@ -2368,7 +2527,9 @@ class WipeDialog(QDialog):
         if not res.success or res.backup_path is None:
             QMessageBox.critical(self, tr("gui.wipe.error_title"), res.error)
             return
-        QMessageBox.information(self, tr("gui.wipe.done_title"), tr(f"gui.wipe.{self.kind}.done", backup=res.backup_path.name))
+        QMessageBox.information(
+            self, tr("gui.wipe.done_title"), tr(f"gui.wipe.{self.kind}.done", backup=res.backup_path.name)
+        )
         self.accept()
 
 
@@ -2519,25 +2680,29 @@ class BadgeManagementView(QWidget):
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText(tr("gui.badges.filter_placeholder"))
         self.search_input.setFixedHeight(36)
-        self.search_input.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 8px; padding: 0 12px;")
+        self.search_input.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 8px; padding: 0 12px;"
+        )
         self.search_input.textChanged.connect(self.filter_users)
         layout.addWidget(self.search_input)
 
         # User Table (10 columns: Displays Family ID, student and both guardians)
         self.table = QTableWidget()
         self.table.setColumnCount(10)
-        self.table.setHorizontalHeaderLabels([
-            tr("gui.badges.column.uid"),
-            tr("gui.badges.column.full_name"),
-            tr("gui.badges.column.family"),
-            tr("gui.badges.column.role"),
-            tr("gui.badges.column.grade"),
-            tr("gui.badges.column.section"),
-            tr("gui.badges.column.guardian1"),
-            tr("gui.badges.column.guardian1_phone"),
-            tr("gui.badges.column.guardian2"),
-            tr("gui.badges.column.guardian2_phone"),
-        ])
+        self.table.setHorizontalHeaderLabels(
+            [
+                tr("gui.badges.column.uid"),
+                tr("gui.badges.column.full_name"),
+                tr("gui.badges.column.family"),
+                tr("gui.badges.column.role"),
+                tr("gui.badges.column.grade"),
+                tr("gui.badges.column.section"),
+                tr("gui.badges.column.guardian1"),
+                tr("gui.badges.column.guardian1_phone"),
+                tr("gui.badges.column.guardian2"),
+                tr("gui.badges.column.guardian2_phone"),
+            ]
+        )
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setColumnWidth(0, 95)
@@ -2626,9 +2791,7 @@ class BadgeManagementView(QWidget):
                 elif c_idx == 3 and is_grad:
                     item.setForeground(QColor(COLOR_SECONDARY))
                     item.setFont(QFont("Arial", 11, QFont.Bold))
-                elif c_idx == 4 and is_grad:
-                    item.setForeground(QColor(COLOR_SECONDARY))
-                elif not u_dict.get("is_active"):
+                elif c_idx == 4 and is_grad or not u_dict.get("is_active"):
                     item.setForeground(QColor(COLOR_SECONDARY))
                 self.table.setItem(r_idx, c_idx, item)
 
@@ -2707,12 +2870,14 @@ class BadgeManagementView(QWidget):
 
             msg_box = QMessageBox(self)
             msg_box.setWindowTitle(tr("gui.badges.promote_confirm_title"))
-            msg_box.setText(tr(
-                "gui.badges.promote_confirm",
-                promoted=preview.promoted_count,
-                graduated=preview.graduated_count,
-                final_grade=final_grade_text(),
-            ))
+            msg_box.setText(
+                tr(
+                    "gui.badges.promote_confirm",
+                    promoted=preview.promoted_count,
+                    graduated=preview.graduated_count,
+                    final_grade=final_grade_text(),
+                )
+            )
             msg_box.setIcon(QMessageBox.Question)
             btn_yes = msg_box.addButton(tr("gui.badges.promote_yes"), QMessageBox.YesRole)
             btn_no = msg_box.addButton(tr("gui.common.no_cancel"), QMessageBox.NoRole)
@@ -2767,7 +2932,9 @@ class BadgeManagementView(QWidget):
                     )
                     self.refresh_users()
                 else:
-                    QMessageBox.critical(self, tr("gui.badges.promote_error_title"), res.error or tr("gui.badges.promote_error"))
+                    QMessageBox.critical(
+                        self, tr("gui.badges.promote_error_title"), res.error or tr("gui.badges.promote_error")
+                    )
         finally:
             self._ensure_normal_rfid_mode()
 
@@ -2836,7 +3003,9 @@ class BadgeManagementView(QWidget):
 
                 if res.success:
                     self.worker.send_screen("lcd.badge_deleted")
-                    QMessageBox.information(self, tr("gui.badges.delete_done_title"), tr("gui.badges.delete_done", uid=uid, name=name))
+                    QMessageBox.information(
+                        self, tr("gui.badges.delete_done_title"), tr("gui.badges.delete_done", uid=uid, name=name)
+                    )
                     self.refresh_users()
                 else:
                     QMessageBox.critical(self, tr("gui.badges.delete_error_title"), res.error)
@@ -2864,7 +3033,7 @@ class UnifiedSearchReportsView(QWidget):
     def __init__(self, worker: HardwareWorker, parent=None):
         super().__init__(parent)
         self.worker = worker
-        self._last_query_data: List[Dict[str, Any]] = []
+        self._last_query_data: list[dict[str, Any]] = []
         self._init_ui()
 
     def _init_ui(self):
@@ -2904,16 +3073,20 @@ class UnifiedSearchReportsView(QWidget):
         row_type.addWidget(lbl_type)
 
         self.combo_query_type = QComboBox()
-        self.combo_query_type.addItems([
-            tr("gui.search.type.daily"),
-            tr("gui.search.type.person"),
-            tr("gui.search.type.matrix"),
-            tr("gui.search.type.general"),
-            tr("gui.search.type.others_day"),
-            tr("gui.search.type.others_range"),
-        ])
+        self.combo_query_type.addItems(
+            [
+                tr("gui.search.type.daily"),
+                tr("gui.search.type.person"),
+                tr("gui.search.type.matrix"),
+                tr("gui.search.type.general"),
+                tr("gui.search.type.others_day"),
+                tr("gui.search.type.others_range"),
+            ]
+        )
         self.combo_query_type.setFixedHeight(34)
-        self.combo_query_type.setStyleSheet(f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-weight: bold;")
+        self.combo_query_type.setStyleSheet(
+            f"background-color: {COLOR_BG_LIGHT}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; font-weight: bold;"
+        )
         self.combo_query_type.currentIndexChanged.connect(self.on_query_type_changed)
         row_type.addWidget(self.combo_query_type, stretch=2)
         row_type.addStretch()
@@ -2930,7 +3103,9 @@ class UnifiedSearchReportsView(QWidget):
         self.date_start.setDate(QDate.currentDate())
         self.date_start.setCalendarPopup(True)
         self.date_start.setDisplayFormat(tr("gui.search.date_picker_format"))
-        self.date_start.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;")
+        self.date_start.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;"
+        )
         self.row_filters.addWidget(self.lbl_date1)
         self.row_filters.addWidget(self.date_start)
 
@@ -2940,7 +3115,9 @@ class UnifiedSearchReportsView(QWidget):
         self.date_end.setDate(QDate.currentDate())
         self.date_end.setCalendarPopup(True)
         self.date_end.setDisplayFormat(tr("gui.search.date_picker_format"))
-        self.date_end.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;")
+        self.date_end.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;"
+        )
         self.lbl_date2.setVisible(False)
         self.date_end.setVisible(False)
         self.row_filters.addWidget(self.lbl_date2)
@@ -2952,7 +3129,9 @@ class UnifiedSearchReportsView(QWidget):
         self.combo_role = QComboBox()
         for role in ("teacher", "admin", "visitor"):
             self.combo_role.addItem(role_text(role), role)
-        self.combo_role.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;")
+        self.combo_role.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;"
+        )
         self.combo_role.currentIndexChanged.connect(lambda _index: self._show_filters())
         self.lbl_role.setVisible(False)
         self.combo_role.setVisible(False)
@@ -2963,7 +3142,9 @@ class UnifiedSearchReportsView(QWidget):
         self.lbl_grade = QLabel(tr("gui.common.grade"))
         self.lbl_grade.setStyleSheet(f"color: {COLOR_PRIMARY}; font-weight: bold;")
         self.combo_grade = QComboBox()
-        self.combo_grade.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;")
+        self.combo_grade.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;"
+        )
         self.row_filters.addWidget(self.lbl_grade)
         self.row_filters.addWidget(self.combo_grade)
 
@@ -2971,7 +3152,9 @@ class UnifiedSearchReportsView(QWidget):
         self.lbl_sec = QLabel(tr("gui.common.section"))
         self.lbl_sec.setStyleSheet(f"color: {COLOR_PRIMARY}; font-weight: bold;")
         self.combo_sec = QComboBox()
-        self.combo_sec.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;")
+        self.combo_sec.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 4px;"
+        )
         self.row_filters.addWidget(self.lbl_sec)
         self.row_filters.addWidget(self.combo_sec)
         self.refresh_school_filters()
@@ -2979,11 +3162,15 @@ class UnifiedSearchReportsView(QWidget):
         # Search Text Input (Name / UID / Family Code)
         self.inp_search_text = QLineEdit()
         self.inp_search_text.setPlaceholderText(tr("gui.search.text_placeholder"))
-        self.inp_search_text.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 5px;")
+        self.inp_search_text.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_PRIMARY}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 5px;"
+        )
         self.row_filters.addWidget(self.inp_search_text, stretch=1)
 
         self.btn_scan_badge = QPushButton(tr("gui.search.scan_badge"))
-        self.btn_scan_badge.setStyleSheet(f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 5px 12px; font-weight: 500;")
+        self.btn_scan_badge.setStyleSheet(
+            f"background-color: {COLOR_SURFACE_ALT}; color: {COLOR_ACCENT}; border: 1px solid {COLOR_INPUT_BORDER}; border-radius: 6px; padding: 5px 12px; font-weight: 500;"
+        )
         self.btn_scan_badge.clicked.connect(self.search_by_scan)
         self.btn_scan_badge.setVisible(False)
         self.row_filters.addWidget(self.btn_scan_badge)
@@ -3028,7 +3215,9 @@ class UnifiedSearchReportsView(QWidget):
 
         btn_folder = QPushButton(tr("gui.search.open_folder"))
         btn_folder.setFixedHeight(38)
-        btn_folder.setStyleSheet(f"background-color: {COLOR_SURFACE}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; padding: 0 14px; font-weight: 500;")
+        btn_folder.setStyleSheet(
+            f"background-color: {COLOR_SURFACE}; color: {COLOR_SECONDARY}; border: 1px solid {COLOR_BORDER}; border-radius: 6px; padding: 0 14px; font-weight: 500;"
+        )
         btn_folder.clicked.connect(self.open_reports_folder)
         row_actions.addWidget(btn_folder)
 
@@ -3072,7 +3261,7 @@ class UnifiedSearchReportsView(QWidget):
 
     def on_query_type_changed(self, idx: int):
         is_range = idx in (2, 5)
-        is_person = (idx == 1)
+        is_person = idx == 1
 
         self.lbl_date2.setVisible(is_range)
         self.date_end.setVisible(is_range)
@@ -3080,7 +3269,9 @@ class UnifiedSearchReportsView(QWidget):
         self.btn_scan_badge.setVisible(is_person)
         self._show_filters()
 
-        self.inp_search_text.setPlaceholderText(tr("gui.search.person_placeholder") if is_person else tr("gui.search.filter_placeholder"))
+        self.inp_search_text.setPlaceholderText(
+            tr("gui.search.person_placeholder") if is_person else tr("gui.search.filter_placeholder")
+        )
 
     def _searching_other_roles(self) -> bool:
         return self.combo_query_type.currentIndex() in (4, 5)
@@ -3099,7 +3290,7 @@ class UnifiedSearchReportsView(QWidget):
         self.lbl_sec.setVisible(shows_section)
         self.combo_sec.setVisible(shows_section)
 
-    def _selected_taught_grade(self) -> Optional[int]:
+    def _selected_taught_grade(self) -> int | None:
         return self._selected_grade() if self.combo_role.currentData() == "teacher" else None
 
     def search_by_scan(self):
@@ -3123,15 +3314,15 @@ class UnifiedSearchReportsView(QWidget):
         self.combo_grade.setCurrentIndex(max(self.combo_grade.findData(grade), 0))
         self.combo_sec.setCurrentIndex(max(self.combo_sec.findData(section), 0))
 
-    def _selected_grade(self) -> Optional[int]:
+    def _selected_grade(self) -> int | None:
         value = self.combo_grade.currentData()
         return None if value == search.ALL else value
 
-    def _selected_section(self) -> Optional[str]:
+    def _selected_section(self) -> str | None:
         value = self.combo_sec.currentData()
         return None if value == search.ALL else value
 
-    def _date_range(self) -> Optional[tuple[datetime, datetime]]:
+    def _date_range(self) -> tuple[datetime, datetime] | None:
         """The chosen start and end dates, or None after telling the user they are reversed."""
         start = datetime.strptime(self.date_start.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
         end = datetime.strptime(self.date_end.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
@@ -3172,14 +3363,16 @@ class UnifiedSearchReportsView(QWidget):
         present, absent = day.present, day.absent
 
         self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels([
-            tr("gui.search.column.date"),
-            tr("gui.search.column.student"),
-            tr("gui.search.column.grade_section"),
-            tr("gui.search.column.check_in"),
-            tr("gui.search.column.check_out"),
-            tr("gui.search.column.status"),
-        ])
+        self.table.setHorizontalHeaderLabels(
+            [
+                tr("gui.search.column.date"),
+                tr("gui.search.column.student"),
+                tr("gui.search.column.grade_section"),
+                tr("gui.search.column.check_in"),
+                tr("gui.search.column.check_out"),
+                tr("gui.search.column.status"),
+            ]
+        )
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setColumnWidth(0, 95)
@@ -3190,23 +3383,27 @@ class UnifiedSearchReportsView(QWidget):
 
         rows = []
         for p in present:
-            rows.append({
-                "date": show_date(date_iso),
-                "name": p.name,
-                "grade_sec": grade_section_text(p.grade, p.section),
-                "in_time": show_time(p.arrival_time),
-                "out_time": show_time(p.departure_time) or "--",
-                "status": p.status,
-            })
+            rows.append(
+                {
+                    "date": show_date(date_iso),
+                    "name": p.name,
+                    "grade_sec": grade_section_text(p.grade, p.section),
+                    "in_time": show_time(p.arrival_time),
+                    "out_time": show_time(p.departure_time) or "--",
+                    "status": p.status,
+                }
+            )
         for a in absent:
-            rows.append({
-                "date": show_date(date_iso),
-                "name": a.name,
-                "grade_sec": grade_section_text(a.grade, a.section),
-                "in_time": "--",
-                "out_time": "--",
-                "status": "absent",
-            })
+            rows.append(
+                {
+                    "date": show_date(date_iso),
+                    "name": a.name,
+                    "grade_sec": grade_section_text(a.grade, a.section),
+                    "in_time": "--",
+                    "out_time": "--",
+                    "status": "absent",
+                }
+            )
 
         # Apply search text filter if typed
         q = self.inp_search_text.text().strip().lower()
@@ -3250,14 +3447,16 @@ class UnifiedSearchReportsView(QWidget):
             results = search.search_by_family_id(conn, query)
 
         self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels([
-            tr("gui.search.column.date"),
-            tr("gui.search.column.person"),
-            tr("gui.search.column.role"),
-            tr("gui.search.column.check_in"),
-            tr("gui.search.column.check_out"),
-            tr("gui.search.column.punctuality"),
-        ])
+        self.table.setHorizontalHeaderLabels(
+            [
+                tr("gui.search.column.date"),
+                tr("gui.search.column.person"),
+                tr("gui.search.column.role"),
+                tr("gui.search.column.check_in"),
+                tr("gui.search.column.check_out"),
+                tr("gui.search.column.punctuality"),
+            ]
+        )
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setColumnWidth(0, 95)
@@ -3271,14 +3470,16 @@ class UnifiedSearchReportsView(QWidget):
             user_name = r.user.get("full_name", "")
             user_role = r.user.get("role", "")
             for h in r.history:
-                rows.append({
-                    "date": show_date(h.date),
-                    "name": user_name,
-                    "role": role_text(user_role),
-                    "in_time": show_time(h.arrival_time),
-                    "out_time": show_time(h.departure_time) or "--",
-                    "status": h.status,
-                })
+                rows.append(
+                    {
+                        "date": show_date(h.date),
+                        "name": user_name,
+                        "role": role_text(user_role),
+                        "in_time": show_time(h.arrival_time),
+                        "out_time": show_time(h.departure_time) or "--",
+                        "status": h.status,
+                    }
+                )
 
         self._last_query_data = rows
         self.table.setRowCount(len(rows))
@@ -3303,7 +3504,9 @@ class UnifiedSearchReportsView(QWidget):
         grade = self._selected_grade()
         section = self._selected_section()
 
-        school_days = search.school_days_on_record(conn, load_school(self.worker.settings), start_dt.date(), end_dt.date())
+        school_days = search.school_days_on_record(
+            conn, load_school(self.worker.settings), start_dt.date(), end_dt.date()
+        )
         matrix_rows = search.compute_student_range_matrix(conn, school_days, grade, section)
 
         headers = [
@@ -3337,7 +3540,10 @@ class UnifiedSearchReportsView(QWidget):
     def _search_general(self, conn):
         date_iso = self.date_start.date().toString("yyyy-MM-dd")
         cur = conn.cursor()
-        cur.execute("SELECT id, date, time, name, role, grade, event_type, status FROM attendance_records WHERE date = ? ORDER BY id DESC", (date_iso,))
+        cur.execute(
+            "SELECT id, date, time, name, role, grade, event_type, status FROM attendance_records WHERE date = ? ORDER BY id DESC",
+            (date_iso,),
+        )
         rows = cur.fetchall()
 
         q = self.inp_search_text.text().strip().lower()
@@ -3345,15 +3551,17 @@ class UnifiedSearchReportsView(QWidget):
             rows = [r for r in rows if q in str(r["name"]).lower() or q in role_text(r["role"]).lower()]
 
         self.table.setColumnCount(7)
-        self.table.setHorizontalHeaderLabels([
-            tr("gui.search.column.time"),
-            tr("gui.search.column.staff"),
-            tr("gui.search.column.role"),
-            tr("gui.search.column.grade"),
-            tr("gui.search.column.event"),
-            tr("gui.search.column.punctuality"),
-            tr("gui.search.column.id"),
-        ])
+        self.table.setHorizontalHeaderLabels(
+            [
+                tr("gui.search.column.time"),
+                tr("gui.search.column.staff"),
+                tr("gui.search.column.role"),
+                tr("gui.search.column.grade"),
+                tr("gui.search.column.event"),
+                tr("gui.search.column.punctuality"),
+                tr("gui.search.column.id"),
+            ]
+        )
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setColumnWidth(0, 95)
@@ -3377,7 +3585,7 @@ class UnifiedSearchReportsView(QWidget):
 
         self.lbl_stats.setText(tr("gui.search.total_general", events=len(rows)))
 
-    def _text_filtered(self, rows: List[Any]) -> List[Any]:
+    def _text_filtered(self, rows: list[Any]) -> list[Any]:
         q = self.inp_search_text.text().strip().lower()
         return [r for r in rows if q in r.name.lower()] if q else rows
 
@@ -3385,16 +3593,20 @@ class UnifiedSearchReportsView(QWidget):
         """Teachers, Admins or Visitors who checked in on one date (E7)."""
         role = self.combo_role.currentData()
         date_iso = self.date_start.date().toString("yyyy-MM-dd")
-        entries = self._text_filtered(search.search_other_role_by_date(conn, date_iso, role, self._selected_taught_grade()))
+        entries = self._text_filtered(
+            search.search_other_role_by_date(conn, date_iso, role, self._selected_taught_grade())
+        )
 
         self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels([
-            tr("gui.search.column.check_in"),
-            tr("gui.search.column.check_out"),
-            tr("gui.search.column.names"),
-            tr("gui.search.column.grade"),
-            tr("gui.search.column.status"),
-        ])
+        self.table.setHorizontalHeaderLabels(
+            [
+                tr("gui.search.column.check_in"),
+                tr("gui.search.column.check_out"),
+                tr("gui.search.column.names"),
+                tr("gui.search.column.grade"),
+                tr("gui.search.column.status"),
+            ]
+        )
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setColumnWidth(0, 100)
@@ -3413,7 +3625,9 @@ class UnifiedSearchReportsView(QWidget):
                 st_item.setForeground(QColor(STATUS_COLORS[e.status]))
             self.table.setItem(r_idx, 4, st_item)
 
-        self.lbl_stats.setText(tr("gui.search.total_others_day", people=len(entries), role=tr(f"report.role_plural.{role}")))
+        self.lbl_stats.setText(
+            tr("gui.search.total_others_day", people=len(entries), role=tr(f"report.role_plural.{role}"))
+        )
 
     def _search_others_range(self, conn):
         """Teachers', Admins' or Visitors' Check-in times across School Days (E8)."""
@@ -3422,8 +3636,12 @@ class UnifiedSearchReportsView(QWidget):
             return
         start_dt, end_dt = date_range
         role = self.combo_role.currentData()
-        school_days = search.school_days_on_record(conn, load_school(self.worker.settings), start_dt.date(), end_dt.date())
-        rows = self._text_filtered(search.compute_other_role_range_matrix(conn, school_days, role, self._selected_taught_grade()))
+        school_days = search.school_days_on_record(
+            conn, load_school(self.worker.settings), start_dt.date(), end_dt.date()
+        )
+        rows = self._text_filtered(
+            search.compute_other_role_range_matrix(conn, school_days, role, self._selected_taught_grade())
+        )
 
         headers = [tr("gui.search.column.names")] + [show_short_date(d) for d in school_days]
         self.table.setColumnCount(len(headers))
@@ -3437,7 +3655,14 @@ class UnifiedSearchReportsView(QWidget):
             for d_idx, arrival in enumerate(r.day_times):
                 self.table.setItem(r_idx, 1 + d_idx, QTableWidgetItem(show_time(arrival)))
 
-        self.lbl_stats.setText(tr("gui.search.total_others_range", people=len(rows), role=tr(f"report.role_plural.{role}"), days=len(school_days)))
+        self.lbl_stats.setText(
+            tr(
+                "gui.search.total_others_range",
+                people=len(rows),
+                role=tr(f"report.role_plural.{role}"),
+                days=len(school_days),
+            )
+        )
 
     def export_to_excel(self):
         idx = self.combo_query_type.currentIndex()
@@ -3513,11 +3738,14 @@ class UnifiedSearchReportsView(QWidget):
                 start, end = date_range[0].date(), date_range[1].date()
                 role = self.combo_role.currentData()
                 school_days = search.school_days_on_record(conn, school, start, end)
-                range_rows = search.compute_other_role_range_matrix(conn, school_days, role, self._selected_taught_grade())
+                range_rows = search.compute_other_role_range_matrix(
+                    conn, school_days, role, self._selected_taught_grade()
+                )
                 exp = reports.export_e8(out_dir, school, role, start, end, school_days, range_rows)
             else:
                 # General table export via openpyxl
                 import openpyxl
+
                 date_iso = self.date_start.date().toString("yyyy-MM-dd")
                 wb = openpyxl.Workbook()
                 ws = wb.active
@@ -3525,9 +3753,14 @@ class UnifiedSearchReportsView(QWidget):
                 headers = [self.table.horizontalHeaderItem(c).text() for c in range(self.table.columnCount())]
                 ws.append(headers)
                 for r in range(self.table.rowCount()):
-                    row_vals = [self.table.item(r, c).text() if self.table.item(r, c) else "" for c in range(self.table.columnCount())]
+                    row_vals = [
+                        self.table.item(r, c).text() if self.table.item(r, c) else ""
+                        for c in range(self.table.columnCount())
+                    ]
                     ws.append(row_vals)
-                file_path = out_dir / reports.sanitize_filename(tr("gui.search.general_log_file", date=date_iso) + ".xlsx")
+                file_path = out_dir / reports.sanitize_filename(
+                    tr("gui.search.general_log_file", date=date_iso) + ".xlsx"
+                )
                 wb.save(file_path)
                 exp = reports.ExportResult(success=True, path=file_path)
 
@@ -3544,7 +3777,9 @@ class UnifiedSearchReportsView(QWidget):
                 if msg.clickedButton() == btn_open:
                     self.open_reports_folder()
             else:
-                QMessageBox.critical(self, tr("gui.search.export_error_title"), exp.error or tr("gui.common.unknown_error"))
+                QMessageBox.critical(
+                    self, tr("gui.search.export_error_title"), exp.error or tr("gui.common.unknown_error")
+                )
 
         except Exception as err:
             QMessageBox.critical(self, tr("gui.search.unexpected_title"), tr("gui.search.unexpected", error=err))
@@ -3736,7 +3971,7 @@ class WeekdayPicker(QWidget):
         self.retranslate()
 
     def retranslate(self):
-        for name, box in zip(WEEKDAYS, self.boxes):
+        for name, box in zip(WEEKDAYS, self.boxes, strict=True):
             box.setText(tr(f"gui.weekday.{name}"))
 
     def days(self) -> tuple[int, ...]:
@@ -3816,7 +4051,9 @@ class SchoolSettingsView(QWidget):
 
         box, box_layout = self._group("gui.settings.grades")
         self.grades = NameListEditor(
-            "gui.settings.grade_placeholder", "gui.settings.add_grade", "gui.settings.remove_last_grade",
+            "gui.settings.grade_placeholder",
+            "gui.settings.add_grade",
+            "gui.settings.remove_last_grade",
             remove_last_only=True,
         )
         box_layout.addWidget(self.grades)
@@ -3825,7 +4062,9 @@ class SchoolSettingsView(QWidget):
 
         box, box_layout = self._group("gui.settings.sections")
         self.sections = NameListEditor(
-            "gui.settings.section_placeholder", "gui.settings.add_section", "gui.settings.remove_section",
+            "gui.settings.section_placeholder",
+            "gui.settings.add_section",
+            "gui.settings.remove_section",
             remove_last_only=False,
         )
         box_layout.addWidget(self.sections)
@@ -4003,7 +4242,7 @@ class MainWindow(QMainWindow):
         # Dedicated Live Access Window instance (Created once, opened on demand)
         self.live_window = LiveAccessWindow(self.worker, parent=None)
 
-        self._hardware_status: Optional[tuple[str, bool]] = None
+        self._hardware_status: tuple[str, bool] | None = None
         self._rebuild_timer = QTimer(self)
         self._rebuild_timer.setInterval(500)
         self._rebuild_timer.timeout.connect(self._rebuild_once_no_dialog_is_open)
@@ -4056,7 +4295,9 @@ class MainWindow(QMainWindow):
         else:
             lbl_logo = QLabel("QUICKPASS")
             lbl_logo.setFont(QFont("Arial", 20, QFont.Bold))
-            lbl_logo.setStyleSheet(f"color: {COLOR_ACCENT}; border: 2px solid {COLOR_DARK_BLUE}; border-radius: 12px; padding: 6px;")
+            lbl_logo.setStyleSheet(
+                f"color: {COLOR_ACCENT}; border: 2px solid {COLOR_DARK_BLUE}; border-radius: 12px; padding: 6px;"
+            )
             lbl_logo.setAlignment(Qt.AlignCenter)
             logo_lay.addWidget(lbl_logo)
 
@@ -4078,7 +4319,9 @@ class MainWindow(QMainWindow):
 
         self.lbl_live_indicator = QLabel(tr("gui.main.access_standby"))
         self.lbl_live_indicator.setFont(QFont("Arial", 11, QFont.Bold))
-        self.lbl_live_indicator.setStyleSheet("color: #D1E5F2; font-weight: bold; background: transparent; border: none;")
+        self.lbl_live_indicator.setStyleSheet(
+            "color: #D1E5F2; font-weight: bold; background: transparent; border: none;"
+        )
         live_lay.addWidget(self.lbl_live_indicator)
 
         self.btn_open_live = QPushButton(tr("gui.main.open_live"))
@@ -4121,7 +4364,7 @@ class MainWindow(QMainWindow):
         sb_layout.addWidget(div)
 
         # Larger Navigation Buttons
-        self.nav_buttons: List[QPushButton] = []
+        self.nav_buttons: list[QPushButton] = []
         nav_items = [
             (tr("gui.main.nav.search"), 0),
             (tr("gui.main.nav.badges"), 1),
@@ -4180,8 +4423,8 @@ class MainWindow(QMainWindow):
         self.view_settings.saved.connect(self._on_settings_saved)
 
         self.view_stack.addWidget(self.view_search_reports)  # Index 0 (Default)
-        self.view_stack.addWidget(self.view_badges)          # Index 1
-        self.view_stack.addWidget(self.view_settings)        # Index 2
+        self.view_stack.addWidget(self.view_badges)  # Index 1
+        self.view_stack.addWidget(self.view_settings)  # Index 2
 
         root_layout.addWidget(self.view_stack, stretch=1)
 
@@ -4282,13 +4525,19 @@ class MainWindow(QMainWindow):
     def on_mode_changed(self, mode: str):
         if mode == RFIDMode.ACCESS_CONTROL:
             self.lbl_live_indicator.setText(tr("gui.main.access_active"))
-            self.lbl_live_indicator.setStyleSheet("color: #34D399; font-weight: bold; background: transparent; border: none;")
+            self.lbl_live_indicator.setStyleSheet(
+                "color: #34D399; font-weight: bold; background: transparent; border: none;"
+            )
         elif mode == RFIDMode.CAPTURE:
             self.lbl_live_indicator.setText(tr("gui.main.access_paused"))
-            self.lbl_live_indicator.setStyleSheet("color: #FCD34D; font-weight: bold; background: transparent; border: none;")
+            self.lbl_live_indicator.setStyleSheet(
+                "color: #FCD34D; font-weight: bold; background: transparent; border: none;"
+            )
         else:
             self.lbl_live_indicator.setText(tr("gui.main.access_standby"))
-            self.lbl_live_indicator.setStyleSheet("color: #D1E5F2; font-weight: bold; background: transparent; border: none;")
+            self.lbl_live_indicator.setStyleSheet(
+                "color: #D1E5F2; font-weight: bold; background: transparent; border: none;"
+            )
 
     def on_hardware_status(self, msg: str, is_connected: bool):
         self._hardware_status = (msg, is_connected)
@@ -4392,7 +4641,7 @@ class SetupWizard(QDialog):
     def __init__(self, settings: Settings, parent=None):
         super().__init__(parent)
         self.settings = settings
-        self._last_error: Optional[school_settings.SchoolSettingsError] = None
+        self._last_error: school_settings.SchoolSettingsError | None = None
         set_language(i18n.LANGUAGES[0])
 
         self.setWindowIcon(get_app_icon())
@@ -4479,9 +4728,7 @@ class SetupWizard(QDialog):
         summary_layout.setSpacing(9)
 
         self.lbl_summary_title = QLabel()
-        self.lbl_summary_title.setStyleSheet(
-            f"color: {COLOR_SIDEBAR_BG}; font-size: 12px; font-weight: bold;"
-        )
+        self.lbl_summary_title.setStyleSheet(f"color: {COLOR_SIDEBAR_BG}; font-size: 12px; font-weight: bold;")
         summary_layout.addWidget(self.lbl_summary_title)
 
         summary_div = QFrame()
@@ -4489,7 +4736,7 @@ class SetupWizard(QDialog):
         summary_div.setStyleSheet("background-color: #244363;")
         summary_layout.addWidget(summary_div)
 
-        self._summary_rows: Dict[str, tuple[QLabel, QLabel]] = {}
+        self._summary_rows: dict[str, tuple[QLabel, QLabel]] = {}
         for key in ("language", "grades", "sections", "weekdays", "late"):
             row_box = QVBoxLayout()
             row_box.setSpacing(2)
@@ -4559,7 +4806,7 @@ class SetupWizard(QDialog):
         lang_bar_layout.addLayout(lang_text_box, stretch=1)
 
         lang_group = QButtonGroup(self)
-        self.buttons: Dict[str, QRadioButton] = {}
+        self.buttons: dict[str, QRadioButton] = {}
         pills_row = QHBoxLayout()
         pills_row.setSpacing(10)
         for lang in i18n.LANGUAGES:
@@ -4633,7 +4880,9 @@ class SetupWizard(QDialog):
         self.sections.list.setFixedHeight(88)
         for editor in (self.grades, self.sections):
             editor.btn_add.setStyleSheet(PRIMARY_BUTTON_STYLE + "QPushButton { padding: 6px 10px; font-size: 12px; }")
-            editor.btn_remove.setStyleSheet(SECONDARY_BUTTON_STYLE + "QPushButton { padding: 6px 10px; font-size: 12px; }")
+            editor.btn_remove.setStyleSheet(
+                SECONDARY_BUTTON_STYLE + "QPushButton { padding: 6px 10px; font-size: 12px; }"
+            )
         self.lbl_sections_hint = hint_label()
         left_col.addWidget(self.lbl_sections)
         left_col.addWidget(self.sections)
@@ -4772,7 +5021,7 @@ class SetupWizard(QDialog):
             box.toggled.connect(lambda *_: self._refresh_summary())
         self.time_late.timeChanged.connect(lambda *_: self._refresh_summary())
 
-    def language(self) -> Optional[str]:
+    def language(self) -> str | None:
         return next((lang for lang, button in self.buttons.items() if button.isChecked()), None)
 
     def _on_language_toggled(self, checked: bool):
@@ -4842,9 +5091,7 @@ class SetupWizard(QDialog):
     def _refresh_summary(self):
         chosen = self.language()
         unset = tr("gui.wizard.preview.unset")
-        self._summary_rows["language"][1].setText(
-            i18n.t(chosen, "gui.wizard.language_name") if chosen else unset
-        )
+        self._summary_rows["language"][1].setText(i18n.t(chosen, "gui.wizard.language_name") if chosen else unset)
 
         grades = [g.strip() for g in self.grades.names() if g.strip()]
         if grades:
@@ -4901,7 +5148,7 @@ class SetupWizard(QDialog):
         self.accept()
         return True
 
-    def save(self, admin_secret_key_hash: str, lang: Optional[str] = None):
+    def save(self, admin_secret_key_hash: str, lang: str | None = None):
         """Store the School Settings typed in; raises SchoolSettingsError if they are refused."""
         school = school_settings.SchoolSettings(
             school_language=lang if lang is not None else (self.language() or ""),

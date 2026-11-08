@@ -10,9 +10,10 @@ DATABASE_URL is supported for PostgreSQL.
 from __future__ import annotations
 
 import os
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Mapping, TypeVar
+from typing import TypeVar
 
 from dotenv import dotenv_values
 

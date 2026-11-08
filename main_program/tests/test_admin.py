@@ -2,6 +2,7 @@ from dataclasses import replace
 from datetime import date, datetime
 
 import pytest
+from conftest import ADMIN_SECRET_KEY, gate_screen, store_school
 
 import access_control
 import database
@@ -18,9 +19,6 @@ from admin import (
     wipe_history,
     wipe_users,
 )
-from conftest import ADMIN_SECRET_KEY, gate_screen, store_school
-
-
 
 
 def test_add_student_with_guardians(conn, settings, now):
@@ -134,9 +132,7 @@ def test_refuse_empty_name(conn, settings, now):
 
 @pytest.mark.parametrize("grade", [0, 12, -1, "diez"])
 def test_refuse_grade_out_of_range(conn, settings, now, grade):
-    result = add_user(
-        conn, settings, "ST001", "est", "Estudiante", grade=grade, section="A", now=now
-    )
+    result = add_user(conn, settings, "ST001", "est", "Estudiante", grade=grade, section="A", now=now)
     assert result.success is False
     assert "grado" in result.error.lower()
 
@@ -202,7 +198,10 @@ def test_a_guardian_needs_a_name_with_letters_and_a_phone_with_its_country_code(
 
 
 def test_guardian_phones_are_stored_as_the_country_code_a_space_and_the_number(conn, settings, now):
-    guardians = [GuardianData(name="Ana Torres", phone="+505 8888-8888"), GuardianData(name="Raúl Torres", phone="+18095550102")]
+    guardians = [
+        GuardianData(name="Ana Torres", phone="+505 8888-8888"),
+        GuardianData(name="Raúl Torres", phone="+18095550102"),
+    ]
 
     result = add_user(conn, settings, "AA01", "est", "Luis Torres", grade=5, section="A", guardians=guardians, now=now)
 
@@ -444,9 +443,15 @@ def test_editing_checks_a_new_name_or_phone_but_keeps_a_phone_stored_before_the_
 
     renamed = modify_user(conn, "AA11", ADMIN_SECRET_KEY, new_name="Luis A. Torres", new_guardians=[stored_guardian])
     bad_name = modify_user(conn, "AA11", ADMIN_SECRET_KEY, new_name="2026")
-    bad_guardian_name = modify_user(conn, "AA11", ADMIN_SECRET_KEY, new_guardians=[GuardianData(name="1", phone="88888888")])
-    bad_phone = modify_user(conn, "AA11", ADMIN_SECRET_KEY, new_guardians=[GuardianData(name="Ana Torres", phone="87777777")])
-    new_phone = modify_user(conn, "AA11", ADMIN_SECRET_KEY, new_guardians=[GuardianData(name="Ana Torres", phone="+505 8777 7777")])
+    bad_guardian_name = modify_user(
+        conn, "AA11", ADMIN_SECRET_KEY, new_guardians=[GuardianData(name="1", phone="88888888")]
+    )
+    bad_phone = modify_user(
+        conn, "AA11", ADMIN_SECRET_KEY, new_guardians=[GuardianData(name="Ana Torres", phone="87777777")]
+    )
+    new_phone = modify_user(
+        conn, "AA11", ADMIN_SECRET_KEY, new_guardians=[GuardianData(name="Ana Torres", phone="+505 8777 7777")]
+    )
 
     assert renamed.success is True
     assert (bad_name.error, bad_guardian_name.error, bad_phone.error) == (
@@ -462,7 +467,11 @@ def test_a_walk_in_visitor_gets_a_new_temporary_badge(conn, settings, now):
     result = assign_visitor_badge(conn, settings, "7E571701", "Carlos Ramírez", now=now)
 
     assert result.success is True
-    assert (result.user["badge_uid"], result.user["full_name"], result.user["role"]) == ("7E571701", "Carlos Ramírez", "visitor")
+    assert (result.user["badge_uid"], result.user["full_name"], result.user["role"]) == (
+        "7E571701",
+        "Carlos Ramírez",
+        "visitor",
+    )
 
 
 def test_a_temporary_badge_passes_to_the_next_walk_in_visitor(conn, settings, now):
@@ -484,7 +493,10 @@ def test_a_badge_that_belongs_to_anyone_but_a_visitor_is_not_lent_to_one(conn, s
     result = assign_visitor_badge(conn, settings, "AA01", "Carlos Ramírez", now=now)
     nameless = assign_visitor_badge(conn, settings, "7E571701", "1234", now=now)
 
-    assert (result.success, result.error) == (False, "La tarjeta AA01 es de Ana Rivas (Estudiante), no de un visitante.")
+    assert (result.success, result.error) == (
+        False,
+        "La tarjeta AA01 es de Ana Rivas (Estudiante), no de un visitante.",
+    )
     assert (nameless.success, nameless.error) == (False, NAME_NEEDS_A_LETTER)
     holder = database.get_user_by_badge_uid(conn, "AA01")
     assert (holder["full_name"], holder["role"]) == ("Ana Rivas", "student")
@@ -684,7 +696,6 @@ def test_statistics_count_by_grade_rank_and_role_with_the_dates_of_the_last_chec
 
 
 def test_wipe_refused_conditions(conn, settings, now):
-    import sqlite3
     from dataclasses import replace
 
     add_user(conn, settings, "AD01", "admin", "Admin", now=now)

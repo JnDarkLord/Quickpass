@@ -9,7 +9,7 @@ from datetime import datetime, time
 from pathlib import Path
 from typing import Any
 
-import pytest
+from conftest import make_school, store_school
 
 import access_control
 import admin
@@ -17,7 +17,6 @@ import cloud_sync
 import config
 import database
 import school_settings
-from conftest import make_school, store_school
 
 
 def test_config_loads_supabase_credentials():
@@ -399,7 +398,14 @@ def test_badges_wiped_at_the_station_are_deleted_in_supabase_rather_than_pulled_
     admin.add_user(conn, settings, "5CA11001", "student", "Ana Torres", grade=3, section="A")
     fake_client = FakeSupabaseSyncClient()
     fake_client.remote_roster = [
-        {"badge_uid": "5CA11001", "full_name": "Ana Torres", "role": "student", "is_active": True, "grade": 3, "section": "A"}
+        {
+            "badge_uid": "5CA11001",
+            "full_name": "Ana Torres",
+            "role": "student",
+            "is_active": True,
+            "grade": 3,
+            "section": "A",
+        }
     ]
 
     assert admin.wipe_users(conn, settings, "clave-de-borrado", "ELIMINAR").success is True
@@ -457,9 +463,7 @@ def test_a_settings_change_made_in_the_cloud_reaches_the_station_on_the_next_syn
     fake_client = FakeSupabaseSyncClient()
     fake_client.remote_school_settings = _cloud_row(late_threshold=time(7, 15, 0))
     changes: list[school_settings.SchoolSettings] = []
-    worker = cloud_sync.CloudSyncWorker(
-        conn, settings, client=fake_client, on_school_settings_changed=changes.append
-    )
+    worker = cloud_sync.CloudSyncWorker(conn, settings, client=fake_client, on_school_settings_changed=changes.append)
 
     result = worker.sync_school_settings()
 
@@ -477,9 +481,7 @@ def test_an_unchanged_cloud_row_does_not_notify_the_station(tmp_path: Path):
     fake_client = FakeSupabaseSyncClient()
     fake_client.remote_school_settings = _cloud_row()
     changes: list[school_settings.SchoolSettings] = []
-    worker = cloud_sync.CloudSyncWorker(
-        conn, settings, client=fake_client, on_school_settings_changed=changes.append
-    )
+    worker = cloud_sync.CloudSyncWorker(conn, settings, client=fake_client, on_school_settings_changed=changes.append)
 
     result = worker.sync_school_settings()
 
@@ -552,9 +554,7 @@ def test_saving_settings_wakes_the_background_sync_without_waiting_for_the_poll(
     lock = threading.Lock()
     fake_client = FakeSupabaseSyncClient()
     fake_client.remote_school_settings = _cloud_row()
-    worker = cloud_sync.CloudSyncWorker(
-        conn, settings, client=fake_client, poll_interval_seconds=60.0, db_lock=lock
-    )
+    worker = cloud_sync.CloudSyncWorker(conn, settings, client=fake_client, poll_interval_seconds=60.0, db_lock=lock)
 
     def wait_for(condition) -> bool:
         deadline = time_mod.monotonic() + 3.0
@@ -575,5 +575,3 @@ def test_saving_settings_wakes_the_background_sync_without_waiting_for_the_poll(
         worker.stop()
     assert fake_client.pushed_school_settings[-1]["school_language"] == "en"
     conn.close()
-
-

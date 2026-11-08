@@ -1,9 +1,8 @@
 from datetime import date, datetime
 
-import pytest
+from conftest import store_school
 
 import database
-from conftest import store_school
 from tools.generator import generate_test_data
 
 

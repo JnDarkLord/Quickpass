@@ -25,10 +25,10 @@ ALL = "ALL"
 
 @dataclass
 class PersonAttendanceDay:
-    date: str           # YYYY-MM-DD
-    arrival_time: str   # HH:MM:SS
-    departure_time: str # HH:MM:SS or ""
-    status: str         # "on_time", "late", or ""
+    date: str  # YYYY-MM-DD
+    arrival_time: str  # HH:MM:SS
+    departure_time: str  # HH:MM:SS or ""
+    status: str  # "on_time", "late", or ""
     grade: int | None
     section: str | None
 
@@ -107,7 +107,7 @@ def parse_date_input(date_str: str) -> tuple[str, str]:
         d, m, y = int(parts[0]), int(parts[1]), int(parts[2])
         dt = datetime(y, m, d)
     except Exception:
-        raise ValueError("(ES) Formato de fecha inválido. Use DD/MM/YYYY")
+        raise ValueError("(ES) Formato de fecha inválido. Use DD/MM/YYYY") from None
     iso_date = dt.strftime("%Y-%m-%d")
     display_date = dt.strftime("%d/%m/%Y")
     return iso_date, display_date
@@ -562,7 +562,6 @@ def compute_other_role_range_matrix(
         rows.append(UserRangeRow(name=name, day_times=times))
 
     return rows
-
 
 
 def normalize_search_text(text: str) -> str:

@@ -5,20 +5,22 @@ VENV_PIP := $(VENV)/bin/pip
 TEST_DB_NAME ?= quickpass_test
 TEST_DATABASE_URL ?= postgresql://localhost/$(TEST_DB_NAME)
 
-.PHONY: help setup demo run test test-offline test-python test-web test-firmware test-db
+.PHONY: help setup demo run lint format test test-offline test-python test-web test-firmware test-db
 
 help:
 	@echo "Quickpass developer commands:"
-	@echo "  make setup          Create .venv, install Python deps, and install web/frontend npm deps"
+	@echo "  make setup          Create .venv, install Python deps (with test and lint tools), and install web/frontend npm deps"
 	@echo "  make demo           Start Quickpass in Demo Mode using an isolated demo.db"
 	@echo "  make run            Start Quickpass using .env"
+	@echo "  make lint           Check Python with Ruff and the web portal with oxlint"
+	@echo "  make format         Format Python with Ruff"
 	@echo "  make test-db        Create and initialize the local '$(TEST_DB_NAME)' PostgreSQL test database"
 	@echo "  make test           Run all test suites (Python + PostgreSQL RLS, web portal, and C++ firmware)"
 	@echo "  make test-offline   Run all offline tests (no PostgreSQL needed: SQLite/GUI, web, and C++ firmware)"
 
 setup:
 	test -d $(VENV) || $(PYTHON) -m venv $(VENV)
-	$(VENV_PIP) install -r requirements.txt
+	$(VENV_PIP) install -r requirements-dev.txt
 	npm --prefix web/frontend ci
 
 demo:
@@ -30,6 +32,15 @@ run:
 	test -x $(VENV_PYTHON) && $(VENV_PYTHON) -c "import PySide6" 2>/dev/null || ($(PYTHON) -m venv $(VENV) && $(VENV_PIP) install -r requirements.txt)
 	test -f .env || cp .env.example .env
 	$(VENV_PYTHON) main_program/main.py
+
+lint:
+	$(VENV_PYTHON) -m ruff check
+	$(VENV_PYTHON) -m ruff format --check
+	npm --prefix web/frontend run lint
+
+format:
+	$(VENV_PYTHON) -m ruff check --fix
+	$(VENV_PYTHON) -m ruff format
 
 test-db:
 	createdb $(TEST_DB_NAME) 2>/dev/null || true

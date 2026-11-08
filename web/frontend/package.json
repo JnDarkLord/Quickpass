@@ -1,8 +1,12 @@
 {
-  "name": "frontend",
+  "name": "quickpass-portal",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -19,7 +23,7 @@
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.4",
     "tailwind-merge": "^3.7.0",
-    "xlsx": "^0.18.5"
+    "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
