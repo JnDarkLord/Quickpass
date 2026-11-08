@@ -11,9 +11,8 @@ import argparse
 import random
 import sqlite3
 import sys
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
 
 _main_dir = Path(__file__).resolve().parent.parent
 if str(_main_dir) not in sys.path:
@@ -73,7 +72,7 @@ def generate_test_data(
 
     # 1. Add Admins
     admin_uids: list[str] = []
-    for i in range(num_admins):
+    for _ in range(num_admins):
         uid = make_uid()
         name = fake.name()
         approver = admin_uids[0] if admin_uids else None
@@ -118,7 +117,7 @@ def generate_test_data(
 
         num_g = random.choice([1, 2])
         guardians: list[admin.GuardianData] = []
-        for g_pos in range(num_g):
+        for _ in range(num_g):
             g_name = fake.name()
             g_phone = f"+1809{random.randint(1000000, 9999999)}"
             g_email = f"{g_name.lower().replace(' ', '.')}@example.com"
@@ -140,7 +139,7 @@ def generate_test_data(
 
     # 4. Add Visitors
     visitor_uids: list[str] = []
-    for i in range(num_visitors):
+    for _ in range(num_visitors):
         uid = make_uid()
         name = fake.name()
         res = admin.add_user(

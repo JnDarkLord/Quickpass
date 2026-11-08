@@ -166,8 +166,9 @@ def approval(monkeypatch):
     """Admin Approval dialogs are answered by typing `approval.key`, the School's key unless a test
     changes it, or by scanning `approval.badge` once a test sets one. `approval.key_offered` tells
     whether the last dialog offered the key at all."""
-    import gui
     from PySide6.QtWidgets import QDialog
+
+    import gui
 
     state = SimpleNamespace(key=ADMIN_SECRET_KEY, badge=None, asked=0, key_offered=None)
 

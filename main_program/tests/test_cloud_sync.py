@@ -9,7 +9,7 @@ from datetime import datetime, time
 from pathlib import Path
 from typing import Any
 
-import pytest
+from conftest import make_school, store_school
 
 import access_control
 import admin
@@ -17,7 +17,6 @@ import cloud_sync
 import config
 import database
 import school_settings
-from conftest import make_school, store_school
 
 
 def test_config_loads_supabase_credentials():

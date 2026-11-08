@@ -107,7 +107,7 @@ def parse_date_input(date_str: str) -> tuple[str, str]:
         d, m, y = int(parts[0]), int(parts[1]), int(parts[2])
         dt = datetime(y, m, d)
     except Exception:
-        raise ValueError("(ES) Formato de fecha inválido. Use DD/MM/YYYY")
+        raise ValueError("(ES) Formato de fecha inválido. Use DD/MM/YYYY") from None
     iso_date = dt.strftime("%Y-%m-%d")
     display_date = dt.strftime("%d/%m/%Y")
     return iso_date, display_date

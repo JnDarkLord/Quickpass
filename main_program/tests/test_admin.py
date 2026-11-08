@@ -2,6 +2,7 @@ from dataclasses import replace
 from datetime import date, datetime
 
 import pytest
+from conftest import ADMIN_SECRET_KEY, gate_screen, store_school
 
 import access_control
 import database
@@ -18,9 +19,6 @@ from admin import (
     wipe_history,
     wipe_users,
 )
-from conftest import ADMIN_SECRET_KEY, gate_screen, store_school
-
-
 
 
 def test_add_student_with_guardians(conn, settings, now):
@@ -684,7 +682,6 @@ def test_statistics_count_by_grade_rank_and_role_with_the_dates_of_the_last_chec
 
 
 def test_wipe_refused_conditions(conn, settings, now):
-    import sqlite3
     from dataclasses import replace
 
     add_user(conn, settings, "AD01", "admin", "Admin", now=now)

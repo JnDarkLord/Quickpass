@@ -14,15 +14,16 @@ from __future__ import annotations
 import os
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import replace
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 # Ensure main_program is in import path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from PySide6.QtCore import QDate, QLocale, QRect, QRectF, QSize, Qt, QThread, QTimer, QUrl, Signal, Slot
+from PySide6.QtCore import QDate, QLocale, QRectF, Qt, QThread, QTimer, QUrl, Signal, Slot
 from PySide6.QtGui import (
     QColor,
     QDesktopServices,
@@ -42,8 +43,6 @@ from PySide6.QtWidgets import (
     QComboBox,
     QDateEdit,
     QDialog,
-    QDialogButtonBox,
-    QFileDialog,
     QFormLayout,
     QFrame,
     QGridLayout,
@@ -72,7 +71,6 @@ from PySide6.QtWidgets import (
 import access_control
 import admin
 import arduino
-from arduino import ArduinoError, ArduinoLink
 import cloud_sync
 import database
 import i18n
@@ -80,6 +78,7 @@ import reports
 import school_settings
 import search
 import sms
+from arduino import ArduinoError, ArduinoLink
 from config import ConfigError, Settings, load_settings
 
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
@@ -90,7 +89,7 @@ LOGO_ICNS = ASSETS_DIR / "logo.icns"
 
 ROLES = ("student", "teacher", "admin", "visitor", "graduate")
 
-_school: Optional[school_settings.SchoolSettings] = None
+_school: school_settings.SchoolSettings | None = None
 _language = i18n.LANGUAGES[0]
 
 
@@ -163,11 +162,11 @@ def final_grade_text() -> str:
     return grade_text(len(school_grades()))
 
 
-def grade_section_text(rank: Any, section: Optional[str]) -> str:
+def grade_section_text(rank: Any, section: str | None) -> str:
     return " ".join(part for part in (grade_text(rank), section or "") if part)
 
 
-def fill_grade_combo(combo: QComboBox, current: Optional[int] = None) -> None:
+def fill_grade_combo(combo: QComboBox, current: int | None = None) -> None:
     """The School's Grades in order, each holding its rank. A current rank the School
     no longer lists stays selectable, so saving other changes keeps it."""
     combo.clear()
@@ -179,7 +178,7 @@ def fill_grade_combo(combo: QComboBox, current: Optional[int] = None) -> None:
         combo.setCurrentIndex(combo.findData(current))
 
 
-def fill_section_combo(combo: QComboBox, current: Optional[str] = None) -> None:
+def fill_section_combo(combo: QComboBox, current: str | None = None) -> None:
     """The School's Sections. A current Section the School no longer lists stays selectable."""
     combo.clear()
     for section in school_sections():
@@ -201,7 +200,7 @@ def load_school(settings: Settings) -> school_settings.SchoolSettings:
         conn.close()
 
 
-def app_icon_path(platform: str = sys.platform) -> Optional[Path]:
+def app_icon_path(platform: str = sys.platform) -> Path | None:
     """The Quickpass icon file for `platform`; only macOS reads the `.icns` format."""
     candidates = [LOGO_ROUNDED_PNG, LOGO_PNG, LOGO_PATH]
     if platform == "darwin":
@@ -218,7 +217,7 @@ def get_app_icon() -> QIcon:
 def get_rounded_pixmap(
     pixmap: QPixmap,
     radius: int = 28,
-    border_color: Optional[str] = None,
+    border_color: str | None = None,
     border_width: int = 0,
 ) -> QPixmap:
     """Clip a pixmap with smooth antialiased circular rounded corners and optional border outline."""
@@ -309,12 +308,12 @@ class HardwareWorker(QThread):
         self.link = ArduinoLink(settings)
         self.running = True
         self.rfid_mode = RFIDMode.STANDBY
-        self._pending_commands: List[str] = []
-        self._capture_callback: Optional[Callable[[str], None]] = None
+        self._pending_commands: list[str] = []
+        self._capture_callback: Callable[[str], None] | None = None
         self._clock = clock
         self._debouncer = access_control.ScanDebouncer()
 
-    def set_rfid_mode(self, mode: str, callback: Optional[Callable[[str], None]] = None):
+    def set_rfid_mode(self, mode: str, callback: Callable[[str], None] | None = None):
         self.rfid_mode = mode
         self._capture_callback = callback
         # A window that starts asking for a scan takes the first read, even of a Badge just let through.
@@ -423,7 +422,7 @@ class HardwareWorker(QThread):
         self.gate_state.emit(True, 3)
         self._log_terminal("GATE", "Manual unlock requested.")
 
-    def process_uid(self, uid: str, force_status: Optional[str] = None, now: Optional[datetime] = None):
+    def process_uid(self, uid: str, force_status: str | None = None, now: datetime | None = None):
         uid = uid.strip().upper()
         now = now or datetime.now()
         conn = database.connect(self.settings.database_path)
@@ -440,8 +439,8 @@ class HardwareWorker(QThread):
 
         # Dispatch async SMS/WhatsApp notifications if any
         if res.texts_to_send and self.settings.twilio_enabled:
+            channel = "WhatsApp" if self.settings.twilio_use_whatsapp else "SMS"
             for phone, body in res.texts_to_send:
-                channel = "WhatsApp" if self.settings.twilio_use_whatsapp else "SMS"
                 try:
                     sms.send_sms_async(
                         self.settings,
@@ -621,7 +620,7 @@ class StudentSquareWidget(QFrame):
 
         self.lbl_name.setText(name)
         self.avatar.setText(initials)
-        self.lbl_grade.setText(f"{role_text(role).upper()} • {grade_sec}".strip(" • "))
+        self.lbl_grade.setText(" • ".join(part for part in (role_text(role).upper(), grade_sec) if part))
         self.lbl_uid.setText(f"UID: {uid}")
         self.lbl_phone.setText(f"WA: {phone}" if phone != "N/A" else tr("gui.scan_tile.no_whatsapp"))
         self.lbl_time.setText(
@@ -996,7 +995,7 @@ class LiveAccessWindow(QMainWindow):
         self.student_square.set_gate_state(is_open, dwell)
 
 
-def resolve_post_dialog_rfid_mode(preferred_mode: Optional[str] = None) -> str:
+def resolve_post_dialog_rfid_mode(preferred_mode: str | None = None) -> str:
     """Determine the proper RFID mode when a Badge dialog closes.
     If LiveAccessWindow is currently open, we must return to ACCESS_CONTROL so
     scans continue processing. Otherwise, fallback to STANDBY.
@@ -1019,7 +1018,7 @@ class AdminAuthDialog(QDialog):
         self,
         worker: HardwareWorker,
         parent=None,
-        operation_title: Optional[str] = None,
+        operation_title: str | None = None,
         allow_secret_key: bool = True,
     ):
         super().__init__(parent)
@@ -1097,10 +1096,14 @@ class AdminAuthDialog(QDialog):
         key_lay.setContentsMargins(0, 0, 0, 0)
         key_lay.setSpacing(6)
         div_lay = QHBoxLayout()
-        line1 = QFrame(); line1.setFrameShape(QFrame.HLine); line1.setStyleSheet(f"color: {COLOR_BORDER};")
+        line1 = QFrame()
+        line1.setFrameShape(QFrame.HLine)
+        line1.setStyleSheet(f"color: {COLOR_BORDER};")
         div_lbl = QLabel(tr("gui.admin_auth.or_key"))
         div_lbl.setStyleSheet(f"color: {COLOR_SECONDARY}; font-size: 11px;")
-        line2 = QFrame(); line2.setFrameShape(QFrame.HLine); line2.setStyleSheet(f"color: {COLOR_BORDER};")
+        line2 = QFrame()
+        line2.setFrameShape(QFrame.HLine)
+        line2.setStyleSheet(f"color: {COLOR_BORDER};")
         div_lay.addWidget(line1)
         div_lay.addWidget(div_lbl)
         div_lay.addWidget(line2)
@@ -1224,7 +1227,7 @@ class BadgeScanDialog(QDialog):
     def __init__(self, worker: HardwareWorker, parent=None):
         super().__init__(parent)
         self.worker = worker
-        self.badge_uid: Optional[str] = None
+        self.badge_uid: str | None = None
         self.setWindowTitle(tr("gui.badge_scan.window_title"))
         self.setWindowIcon(get_app_icon())
         self.setFixedWidth(420)
@@ -1830,7 +1833,7 @@ class RegisterBadgeDialog(QDialog):
         section = self.combo_sec.currentData() if is_student else None
         family_id = self.inp_family_id.text().strip().upper() if is_student else None
 
-        guardians: List[admin.GuardianData] = []
+        guardians: list[admin.GuardianData] = []
         if is_student:
             g1_name = self.inp_g1_name.text().strip()
             g1_phone = self.inp_g1_phone.text().strip()
@@ -1886,7 +1889,7 @@ class RegisterBadgeDialog(QDialog):
         finally:
             conn.close()
 
-    def _admin_scan_approval(self, name: str) -> Optional[str]:
+    def _admin_scan_approval(self, name: str) -> str | None:
         """The Badge UID of the Admin who scans to approve adding `name` as another Admin, or
         None if no one does; the Admin Secret Key cannot stand in for that scan."""
         self._approving = True
@@ -2174,7 +2177,7 @@ class EditBadgeDialog(QDialog):
         section = self.combo_sec.currentData() if hasattr(self, "combo_sec") else None
         family_id = self.inp_family_id.text().strip().upper() if hasattr(self, "inp_family_id") else None
 
-        guardians: List[admin.GuardianData] | None = None
+        guardians: list[admin.GuardianData] | None = None
         if role == "student":
             guardians = []
             g1_name = self.inp_g1_name.text().strip()
@@ -2266,7 +2269,7 @@ class StatisticsDialog(QDialog):
             ("gui.stats.by_role", by_role + [(tr("gui.stats.role.graduate"), stats.graduates)]),
             ("gui.stats.recent_check_ins", [(show_date(day.isoformat()), count) for day, count in stats.recent_check_ins]),
         ]
-        rows: List[tuple[str, str, bool]] = [
+        rows: list[tuple[str, str, bool]] = [
             (tr("gui.stats.total_users"), str(stats.total_users), False),
             (tr("gui.stats.total_check_ins"), str(stats.total_check_ins), False),
         ]
@@ -2626,9 +2629,7 @@ class BadgeManagementView(QWidget):
                 elif c_idx == 3 and is_grad:
                     item.setForeground(QColor(COLOR_SECONDARY))
                     item.setFont(QFont("Arial", 11, QFont.Bold))
-                elif c_idx == 4 and is_grad:
-                    item.setForeground(QColor(COLOR_SECONDARY))
-                elif not u_dict.get("is_active"):
+                elif c_idx == 4 and is_grad or not u_dict.get("is_active"):
                     item.setForeground(QColor(COLOR_SECONDARY))
                 self.table.setItem(r_idx, c_idx, item)
 
@@ -2864,7 +2865,7 @@ class UnifiedSearchReportsView(QWidget):
     def __init__(self, worker: HardwareWorker, parent=None):
         super().__init__(parent)
         self.worker = worker
-        self._last_query_data: List[Dict[str, Any]] = []
+        self._last_query_data: list[dict[str, Any]] = []
         self._init_ui()
 
     def _init_ui(self):
@@ -3099,7 +3100,7 @@ class UnifiedSearchReportsView(QWidget):
         self.lbl_sec.setVisible(shows_section)
         self.combo_sec.setVisible(shows_section)
 
-    def _selected_taught_grade(self) -> Optional[int]:
+    def _selected_taught_grade(self) -> int | None:
         return self._selected_grade() if self.combo_role.currentData() == "teacher" else None
 
     def search_by_scan(self):
@@ -3123,15 +3124,15 @@ class UnifiedSearchReportsView(QWidget):
         self.combo_grade.setCurrentIndex(max(self.combo_grade.findData(grade), 0))
         self.combo_sec.setCurrentIndex(max(self.combo_sec.findData(section), 0))
 
-    def _selected_grade(self) -> Optional[int]:
+    def _selected_grade(self) -> int | None:
         value = self.combo_grade.currentData()
         return None if value == search.ALL else value
 
-    def _selected_section(self) -> Optional[str]:
+    def _selected_section(self) -> str | None:
         value = self.combo_sec.currentData()
         return None if value == search.ALL else value
 
-    def _date_range(self) -> Optional[tuple[datetime, datetime]]:
+    def _date_range(self) -> tuple[datetime, datetime] | None:
         """The chosen start and end dates, or None after telling the user they are reversed."""
         start = datetime.strptime(self.date_start.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
         end = datetime.strptime(self.date_end.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
@@ -3377,7 +3378,7 @@ class UnifiedSearchReportsView(QWidget):
 
         self.lbl_stats.setText(tr("gui.search.total_general", events=len(rows)))
 
-    def _text_filtered(self, rows: List[Any]) -> List[Any]:
+    def _text_filtered(self, rows: list[Any]) -> list[Any]:
         q = self.inp_search_text.text().strip().lower()
         return [r for r in rows if q in r.name.lower()] if q else rows
 
@@ -3736,7 +3737,7 @@ class WeekdayPicker(QWidget):
         self.retranslate()
 
     def retranslate(self):
-        for name, box in zip(WEEKDAYS, self.boxes):
+        for name, box in zip(WEEKDAYS, self.boxes, strict=True):
             box.setText(tr(f"gui.weekday.{name}"))
 
     def days(self) -> tuple[int, ...]:
@@ -4003,7 +4004,7 @@ class MainWindow(QMainWindow):
         # Dedicated Live Access Window instance (Created once, opened on demand)
         self.live_window = LiveAccessWindow(self.worker, parent=None)
 
-        self._hardware_status: Optional[tuple[str, bool]] = None
+        self._hardware_status: tuple[str, bool] | None = None
         self._rebuild_timer = QTimer(self)
         self._rebuild_timer.setInterval(500)
         self._rebuild_timer.timeout.connect(self._rebuild_once_no_dialog_is_open)
@@ -4121,7 +4122,7 @@ class MainWindow(QMainWindow):
         sb_layout.addWidget(div)
 
         # Larger Navigation Buttons
-        self.nav_buttons: List[QPushButton] = []
+        self.nav_buttons: list[QPushButton] = []
         nav_items = [
             (tr("gui.main.nav.search"), 0),
             (tr("gui.main.nav.badges"), 1),
@@ -4392,7 +4393,7 @@ class SetupWizard(QDialog):
     def __init__(self, settings: Settings, parent=None):
         super().__init__(parent)
         self.settings = settings
-        self._last_error: Optional[school_settings.SchoolSettingsError] = None
+        self._last_error: school_settings.SchoolSettingsError | None = None
         set_language(i18n.LANGUAGES[0])
 
         self.setWindowIcon(get_app_icon())
@@ -4489,7 +4490,7 @@ class SetupWizard(QDialog):
         summary_div.setStyleSheet("background-color: #244363;")
         summary_layout.addWidget(summary_div)
 
-        self._summary_rows: Dict[str, tuple[QLabel, QLabel]] = {}
+        self._summary_rows: dict[str, tuple[QLabel, QLabel]] = {}
         for key in ("language", "grades", "sections", "weekdays", "late"):
             row_box = QVBoxLayout()
             row_box.setSpacing(2)
@@ -4559,7 +4560,7 @@ class SetupWizard(QDialog):
         lang_bar_layout.addLayout(lang_text_box, stretch=1)
 
         lang_group = QButtonGroup(self)
-        self.buttons: Dict[str, QRadioButton] = {}
+        self.buttons: dict[str, QRadioButton] = {}
         pills_row = QHBoxLayout()
         pills_row.setSpacing(10)
         for lang in i18n.LANGUAGES:
@@ -4772,7 +4773,7 @@ class SetupWizard(QDialog):
             box.toggled.connect(lambda *_: self._refresh_summary())
         self.time_late.timeChanged.connect(lambda *_: self._refresh_summary())
 
-    def language(self) -> Optional[str]:
+    def language(self) -> str | None:
         return next((lang for lang, button in self.buttons.items() if button.isChecked()), None)
 
     def _on_language_toggled(self, checked: bool):
@@ -4901,7 +4902,7 @@ class SetupWizard(QDialog):
         self.accept()
         return True
 
-    def save(self, admin_secret_key_hash: str, lang: Optional[str] = None):
+    def save(self, admin_secret_key_hash: str, lang: str | None = None):
         """Store the School Settings typed in; raises SchoolSettingsError if they are refused."""
         school = school_settings.SchoolSettings(
             school_language=lang if lang is not None else (self.language() or ""),

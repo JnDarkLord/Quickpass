@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import re
 import sqlite3
+from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import Any, Iterator, Sequence
+from typing import Any
 
 # Each statement is idempotent so it can run on every startup.
 SCHEMA: list[str] = [
@@ -147,7 +148,7 @@ class PostgresRow:
     def __init__(self, cols: Sequence[str], vals: Sequence[Any]):
         self._cols = list(cols)
         self._vals = list(vals)
-        self._map = dict(zip(self._cols, self._vals))
+        self._map = dict(zip(self._cols, self._vals, strict=True))
         self._lower_map = {k.lower(): v for k, v in self._map.items()}
 
     def __getitem__(self, item: int | str) -> Any:
@@ -164,7 +165,7 @@ class PostgresRow:
         return list(self._vals)
 
     def items(self) -> list[tuple[str, Any]]:
-        return list(zip(self._cols, self._vals))
+        return list(zip(self._cols, self._vals, strict=True))
 
     def __iter__(self) -> Iterator[Any]:
         return iter(self._vals)

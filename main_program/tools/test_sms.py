@@ -18,8 +18,8 @@ _main_dir = Path(__file__).resolve().parent.parent
 if str(_main_dir) not in sys.path:
     sys.path.insert(0, str(_main_dir))
 
-from config import load_settings
 import sms
+from config import load_settings
 
 
 def main() -> int:

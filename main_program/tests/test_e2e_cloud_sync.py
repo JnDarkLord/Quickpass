@@ -10,6 +10,7 @@ from pathlib import Path
 
 import psycopg2
 import pytest
+from conftest import make_school, postgres_url, store_school
 from dotenv import dotenv_values
 
 import access_control
@@ -17,7 +18,6 @@ import admin
 import cloud_sync
 import config
 import database
-from conftest import make_school, postgres_url, store_school
 
 _DOTENV = dotenv_values(config.REPO_ROOT / ".env")
 SUPABASE_URL = os.environ.get("SUPABASE_URL", _DOTENV.get("SUPABASE_URL") or "")

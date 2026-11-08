@@ -7,7 +7,7 @@ the inputs and the time; they never read the keyboard, print or touch serial.
 from __future__ import annotations
 
 import sqlite3
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
@@ -17,7 +17,6 @@ import i18n
 import school_settings
 import sms
 from config import Settings
-
 
 ROLE_MAP = {
     "est": "student",

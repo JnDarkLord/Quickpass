@@ -8,8 +8,8 @@ never waits.
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable
 
 import requests
 

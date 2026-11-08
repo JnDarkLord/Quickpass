@@ -4,11 +4,10 @@ from unittest.mock import patch
 
 import openpyxl
 import pytest
+from conftest import store_school
 
-import database
 from access_control import sign_in_visitor
 from admin import GuardianData, add_user, promote_grades
-from conftest import store_school
 from reports import (
     export_e1,
     export_e2,

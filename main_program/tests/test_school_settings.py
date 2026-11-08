@@ -4,11 +4,11 @@ from dataclasses import replace
 from datetime import date, datetime, time
 
 import pytest
+from conftest import make_school
 
 import database
 import school_settings
 from admin import add_user, promote_grades
-from conftest import make_school
 from school_settings import SchoolSettings, SchoolSettingsError
 
 

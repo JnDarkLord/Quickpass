@@ -20,7 +20,6 @@ import sms
 from config import Settings
 from school_settings import SchoolSettings
 
-
 IGNORE_SAME_BADGE_SECONDS = 5.0
 
 

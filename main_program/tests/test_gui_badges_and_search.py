@@ -16,6 +16,7 @@ import pytest
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from conftest import ADMIN_SECRET_KEY, make_school, store_school
 from PySide6.QtCore import QDate
 from PySide6.QtWidgets import QApplication, QDialog
 
@@ -23,7 +24,6 @@ import access_control
 import admin
 import database
 import gui
-from conftest import ADMIN_SECRET_KEY, make_school, store_school
 from gui import HardwareWorker, RFIDMode
 
 

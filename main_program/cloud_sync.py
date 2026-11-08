@@ -25,12 +25,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Protocol
 
-from supabase import Client, ClientOptions, create_client
-
 import database
 import school_settings
 from config import Settings
 from school_settings import CachedSchoolSettings, SchoolSettings
+from supabase import Client, ClientOptions, create_client
 
 logger = logging.getLogger(__name__)
 
@@ -290,17 +289,16 @@ class CloudSyncWorker:
 
     def _evict_previous_days_scans(self, today_str: str) -> int:
         """Delete synced attendance_records from previous days while preserving today's scans."""
-        with self._lock:
-            with self._conn:
-                cur = self._conn.execute(
-                    """
+        with self._lock, self._conn:
+            cur = self._conn.execute(
+                """
                     DELETE FROM attendance_records
                     WHERE date < ?
                       AND (is_synced = 1 OR event_type NOT IN ('check_in', 'check_out'))
                     """,
-                    (today_str,),
-                )
-                return cur.rowcount if cur.rowcount and cur.rowcount > 0 else 0
+                (today_str,),
+            )
+            return cur.rowcount if cur.rowcount and cur.rowcount > 0 else 0
 
     def sync_once(self, now: datetime | None = None) -> SyncBatchResult:
         """Flushes one batch of unsynced Check-in/Check-out records to Supabase and evicts old synced days."""
@@ -355,12 +353,11 @@ class CloudSyncWorker:
         record_ids = [r["id"] for r in rows]
         placeholders = ",".join("?" for _ in record_ids)
 
-        with self._lock:
-            with self._conn:
-                self._conn.execute(
-                    f"UPDATE attendance_records SET is_synced = 1, synced_at = ? WHERE id IN ({placeholders})",
-                    [synced_ts, *record_ids],
-                )
+        with self._lock, self._conn:
+            self._conn.execute(
+                f"UPDATE attendance_records SET is_synced = 1, synced_at = ? WHERE id IN ({placeholders})",
+                [synced_ts, *record_ids],
+            )
 
         evicted = self._evict_previous_days_scans(today_str)
         self._consecutive_failures = 0
@@ -389,9 +386,8 @@ class CloudSyncWorker:
             if deleted_uids and hasattr(self._client, "delete_user"):
                 for d_uid in deleted_uids:
                     self._client.delete_user(d_uid)
-                    with self._lock:
-                        with self._conn:
-                            self._conn.execute("DELETE FROM deleted_users WHERE badge_uid = ?", (d_uid,))
+                    with self._lock, self._conn:
+                        self._conn.execute("DELETE FROM deleted_users WHERE badge_uid = ?", (d_uid,))
 
             with self._lock:
                 cur = self._conn.cursor()
@@ -403,12 +399,11 @@ class CloudSyncWorker:
                     user_bundle = database.get_user_by_badge_uid(self._conn, uid)
                 if user_bundle is not None:
                     self._client.upsert_user(user_bundle)
-                    with self._lock:
-                        with self._conn:
-                            self._conn.execute(
-                                "UPDATE users SET is_synced = 1 WHERE badge_uid = ?",
-                                (uid,),
-                            )
+                    with self._lock, self._conn:
+                        self._conn.execute(
+                            "UPDATE users SET is_synced = 1 WHERE badge_uid = ?",
+                            (uid,),
+                        )
                     pushed += 1
 
             remote_roster = self._client.fetch_roster()

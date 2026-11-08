@@ -2,11 +2,10 @@ from dataclasses import replace
 from datetime import datetime, time, timedelta
 
 import pytest
+from conftest import gate_screen, store_school
 
-import database
 from access_control import ScanDebouncer, process_scan_line, sign_in_visitor
 from admin import add_user, assign_visitor_badge
-from conftest import gate_screen, store_school
 
 
 def test_ignore_boot_and_diagnostic_lines(conn, settings, now):

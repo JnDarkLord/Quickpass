@@ -1,7 +1,7 @@
 import pytest
+from conftest import postgres_url
 
 import database
-from conftest import postgres_url
 
 
 def test_fresh_database_file_is_created_with_foreign_keys_on(tmp_path):

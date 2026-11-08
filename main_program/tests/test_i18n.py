@@ -21,13 +21,14 @@ CATALOG_DIRS = [
     pytest.param(REPO_ROOT / "web" / "frontend" / "src" / "locales", id="portal"),
 ]
 KEY_NAMESPACES = ("lcd", "sms", "admin", "gui", "report", "status", "role", "settings", "common")
-KEY_LITERAL = re.compile(r"""["']((?:%s)\.[a-z0-9_]+(?:\.[a-z0-9_]+)*)["']""" % "|".join(KEY_NAMESPACES))
+NAMESPACE_PATTERN = "|".join(KEY_NAMESPACES)
+KEY_LITERAL = re.compile(r"""["']((?:""" + NAMESPACE_PATTERN + r""")\.[a-z0-9_]+(?:\.[a-z0-9_]+)*)["']""")
 # Helpers that put the start of the key in front themselves: admin._error and reports' texts.
 PREFIXED_KEY_CALLS = (
     (re.compile(r"""\b_error\(\s*conn,\s*["']([a-z0-9_.]+)["']"""), "admin.error."),
     (re.compile(r"""\btexts\(\s*["']([a-z0-9_.]+)["']"""), "report."),
 )
-KEY_TEMPLATE = re.compile(r"""\bf"((?:%s)\.[^"]*\{[^"]*)\"""" % "|".join(KEY_NAMESPACES))
+KEY_TEMPLATE = re.compile(r"""\bf"((?:""" + NAMESPACE_PATTERN + r""")\.[^"]*\{[^"]*)\"""")
 TEMPLATE_FIELD = re.compile(r"\{[^}]+\}")
 WIPE_KINDS = ("users", "history")
 # Keys built from a neutral value, such as f"lcd.deny.{reason}", with every value each one is built from.

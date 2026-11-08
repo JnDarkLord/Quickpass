@@ -13,14 +13,13 @@ import pytest
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from PySide6.QtCore import QDate, Qt
+from conftest import gate_screen, make_school, store_school
+from PySide6.QtCore import QDate
 from PySide6.QtGui import QColor, QPixmap
 from PySide6.QtWidgets import QApplication
 
 import arduino
 import database
-from config import Settings
-from conftest import gate_screen, make_school, store_school
 import gui
 from gui import (
     COLOR_DARK_BLUE,
@@ -202,11 +201,12 @@ def test_student_square_scan_banners(qapp):
 
 
 def test_badge_management_view_displays_graduates(qapp, settings):
-    import database, admin
+    import admin
+    import database
     conn = database.connect(settings.database_path)
     admin.add_user(conn, settings, badge_uid="EE112233", role="student", full_name="Alumno Once", grade=11, section="A")
     admin.add_user(conn, settings, badge_uid="EE445566", role="student", full_name="Graduado Test", grade=11, section="B")
-    
+
     # Graduate one student
     with conn:
         conn.execute("UPDATE users SET role = 'graduate', is_active = 0 WHERE badge_uid = 'EE445566'")
@@ -276,7 +276,8 @@ def test_teacher_registration_and_display_has_no_section(qapp, settings):
         assert dlg.g2_box.isVisible() is False
 
         # Add teacher to database and verify BadgeManagementView displays '--' for section
-        import database, admin
+        import admin
+        import database
         conn = database.connect(settings.database_path)
         admin.add_user(
             conn,
@@ -310,7 +311,9 @@ def test_teacher_registration_and_display_has_no_section(qapp, settings):
 
 
 def test_all_sections_choice_searches_every_section_whatever_its_label(qapp, settings):
-    import access_control, admin, database
+    import access_control
+    import admin
+    import database
 
     conn = database.connect(settings.database_path)
     admin.add_user(conn, settings, badge_uid="AA000001", role="student", full_name="Ana Seccion A", grade=3, section="A")
@@ -338,7 +341,8 @@ def test_all_sections_choice_searches_every_section_whatever_its_label(qapp, set
 
 
 def test_scan_tile_shows_24_hour_time(qapp, settings):
-    import admin, database
+    import admin
+    import database
 
     conn = database.connect(settings.database_path)
     admin.add_user(conn, settings, badge_uid="CC000003", role="student", full_name="Carla Tarde", grade=5, section="A")
@@ -386,7 +390,8 @@ def test_english_school_sees_english_banners_feed_and_12_hour_times(qapp, settin
 
 
 def test_english_daily_search_shows_english_dates_times_and_statuses(qapp, settings, english_school):
-    import access_control, admin
+    import access_control
+    import admin
 
     conn = database.connect(settings.database_path)
     admin.add_user(conn, settings, badge_uid="AA000001", role="student", full_name="Ana Morales", grade=3, section="A")
@@ -418,7 +423,8 @@ def test_english_daily_search_shows_english_dates_times_and_statuses(qapp, setti
 
 
 def test_searches_count_only_the_schools_school_days(qapp, settings, school):
-    import access_control, admin
+    import access_control
+    import admin
 
     conn = database.connect(settings.database_path)
     store_school(conn, replace(school, holidays=(date(2026, 10, 6),)))
