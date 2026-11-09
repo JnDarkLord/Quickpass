@@ -99,6 +99,8 @@ The first time Quickpass starts on a station, it looks for the School Settings: 
 
 Otherwise the first-run setup window opens, where all initial policies are configured on a single screen:
 
+![Quickpass First-Run Setup Window](images/first-run-setup.webp)
+
 1. **School Language:** Spanish or English. Everything the School's people see uses it: the window, the Door Gate's LCD, the reports, the text messages, and the web portal.
 2. **Grades and Sections:** the School's Grades in order, first to last, and the Sections they're divided into, such as A and B. The last Grade is the one whose Students graduate at the Grade Promotion.
 3. **School Days and Schedule:** the weekdays with classes, the Late Threshold (a Check-in after it counts as Late), and the wait between a Check-in and a Check-out. Holidays are added afterwards in School Settings.

@@ -39,6 +39,10 @@ Quickpass focuses strictly on entrance attendance, physical gate access, Guardia
 
 The desktop program is the heart of a station: it shows the window, talks to the Arduino, decides each scan, and sends the messages. Cloud Sync copies the station's records to Supabase, where the web portal reads them. A School can run without Supabase, keeping everything on the station. [Architecture](docs/architecture.md) explains each part.
 
+![Quickpass Live Access Control Window](docs/images/live-access-window.webp)
+
+![Quickpass Web Portal Admin Day View](docs/images/web-portal-day-view.webp)
+
 ## Hardware
 
 | Part | Quantity |

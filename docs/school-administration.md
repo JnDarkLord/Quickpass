@@ -14,6 +14,8 @@ The sidebar has three views:
 
 **Open Live Access** opens the entrance window. It shows each tap at the Door Gate in the Live Access Feed. Its buttons are **Manual Unlock**, which opens the Door Gate for someone without a Badge, **Register Visitor**, and **Full Screen** (F11), for a screen facing the entrance.
 
+![Quickpass Live Access Control Window](images/live-access-window.webp)
+
 ## Admin Approval
 
 Some changes need **Admin Approval**: an Admin taps their Badge on the reader, or types the **Admin Secret Key** instead. Quickpass asks for it to:
@@ -42,6 +44,8 @@ Students, Teachers, and Admins each have a Badge: a card, keyfob, or sticker wit
 
 Register the School's first Admin right after setup, so that later changes can be approved with their Badge.
 
+![Register a New RFID Badge](images/register-badge.webp)
+
 ### Editing and deleting
 
 - **Edit** changes a person's name, Grade, Section, and Guardians. Tapping another Badge while editing gives the person that Badge's UID instead. A person's Role can't be changed.
@@ -52,6 +56,8 @@ Register the School's first Admin right after setup, so that later changes can b
 ### Visitors
 
 In the Live Access window, click **Register Visitor**, type the visitor's name and ID document, and optionally tap a temporary Badge to give them. Registering the visit opens the Door Gate.
+
+![Register a School Visitor](images/register-visitor.webp)
 
 ### Web portal access
 

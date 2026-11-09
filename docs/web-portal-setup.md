@@ -10,6 +10,8 @@ The portal is optional. Without it, the desktop program works on its own, with t
 
 Each Role has a **Day View**, with today's Check-ins, Check-outs, and Attendance Status, and a **Year View**, with the attendance and punctuality history. On a holiday or a weekday without classes, the Day View says so and marks nobody absent.
 
+![Quickpass Web Portal Admin Day View](images/web-portal-day-view.webp)
+
 The portal is a static website: HTML, CSS, and JavaScript that talk straight to Supabase from the browser. There's no server of its own to run. Supabase's Row-Level Security decides what each signed-in person can read.
 
 ## What you need
